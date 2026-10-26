@@ -21,13 +21,13 @@ function fallbackSvg(scope: Escopo) {
   return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
 
-export function NewsImage({ src, alt, scope, lazy = true }: { src: string; alt: string; scope: Escopo; lazy?: boolean }) {
+export function NewsImage({ src, alt, scope, lazy = true }: { src?: string; alt: string; scope: Escopo; lazy?: boolean }) {
   const [falhou, setFalhou] = useState(false);
   // Imagens vêm de vários domínios das fontes, então não passam pelo next/image.
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={falhou ? fallbackSvg(scope) : src}
+      src={falhou || !src ? fallbackSvg(scope) : src}
       alt={alt}
       loading={lazy ? "lazy" : "eager"}
       referrerPolicy="no-referrer"

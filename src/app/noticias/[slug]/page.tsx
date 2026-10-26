@@ -24,9 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: noticia.title,
       description: noticia.subtitle,
       publishedTime: noticia.date,
-      images: [{ url: noticia.image, alt: noticia.title }],
+      images: noticia.image ? [{ url: noticia.image, alt: noticia.title }] : undefined,
     },
-    twitter: { card: "summary_large_image", title: noticia.title, description: noticia.subtitle, images: [noticia.image] },
+    twitter: {
+      card: noticia.image ? "summary_large_image" : "summary",
+      title: noticia.title,
+      description: noticia.subtitle,
+      images: noticia.image ? [noticia.image] : undefined,
+    },
   };
 }
 
@@ -40,7 +45,7 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
     "@type": "NewsArticle",
     headline: noticia.title,
     description: noticia.subtitle,
-    image: [noticia.image],
+    image: noticia.image ? [noticia.image] : undefined,
     datePublished: noticia.date,
     author: { "@type": "Organization", name: noticia.author },
     isBasedOn: noticia.sourceUrl,
@@ -110,18 +115,37 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                 )}
               </section>
 
-              <p className="modal-article__source">
-                Fonte:{" "}
-                <a href={noticia.sourceUrl} target="_blank" rel="noopener noreferrer">
-                  {noticia.source} &rarr; ler a matéria original
-                </a>
-              </p>
+              {noticia.sources && noticia.sources.length > 1 ? (
+                <div className="modal-article__source">
+                  <p>Fontes:</p>
+                  <ul>
+                    {noticia.sources.map((f) => (
+                      <li key={f.url}>
+                        {f.name}:{" "}
+                        <a href={f.url} target="_blank" rel="noopener noreferrer">
+                          {f.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="modal-article__source">
+                  Fonte:{" "}
+                  <a href={noticia.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    {noticia.source} &rarr; ler a matéria original
+                  </a>
+                </p>
+              )}
 
               <div className="modal-article__body">
                 {noticia.body.map((p) => (
                   <p key={p}>{p}</p>
                 ))}
               </div>
+              {noticia.generatedByAI && (
+                <p className="modal-article__ai-note">Resumo produzido com auxílio de IA a partir das fontes acima.</p>
+              )}
 
               {outras.length > 0 && (
                 <section className="modal-related">

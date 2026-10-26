@@ -1184,3 +1184,19 @@ a.modal-close-btn {
 [data-theme="dark"] .theme-label--to-dark {
   display: none;
 }
+
+.modal-article__source ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.modal-article__source li {
+  margin-bottom: 0.3rem;
+}
+
+.modal-article__ai-note {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-muted);
+}

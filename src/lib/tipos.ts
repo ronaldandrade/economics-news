@@ -28,10 +28,15 @@ export interface Noticia {
   location: string;
   readTime: string;
   affectedCountries: string[];
-  image: string;
+  /** Vazio quando a fonte não tem imagem: o site mostra o SVG de reserva. */
+  image?: string;
   imageCaption?: string;
   source: string;
   sourceUrl: string;
+  /** Todas as fontes quando o resumo junta mais de uma (o agente preenche). */
+  sources?: { name: string; title: string; url: string }[];
+  /** true nos resumos escritos pelo agente de notícias. */
+  generatedByAI?: boolean;
   keyPoints: string[];
   body: string[];
 }

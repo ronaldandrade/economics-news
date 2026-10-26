@@ -14,7 +14,7 @@ const PASTA = path.join(process.cwd(), "content", "noticias");
 
 function validar(n: Noticia, arquivo: string): Noticia {
   const erros: string[] = [];
-  const texto = ["slug", "title", "subtitle", "author", "location", "kicker", "image", "source", "sourceUrl"] as const;
+  const texto = ["slug", "title", "subtitle", "author", "location", "kicker", "source", "sourceUrl"] as const;
   for (const campo of texto) {
     if (typeof n[campo] !== "string" || !n[campo].trim()) erros.push(`"${campo}" vazio`);
   }
@@ -24,6 +24,10 @@ function validar(n: Noticia, arquivo: string): Noticia {
   if (!Array.isArray(n.body) || n.body.length === 0) erros.push(`"body" sem parágrafos`);
   if (!Array.isArray(n.affectedCountries)) erros.push(`"affectedCountries" deve ser uma lista`);
   if (!/^https:\/\//.test(n.sourceUrl ?? "")) erros.push(`"sourceUrl" deve começar com https://`);
+  if (n.image && !/^https:\/\//.test(n.image)) erros.push(`"image" deve começar com https://`);
+  for (const f of n.sources ?? []) {
+    if (!f.name || !/^https:\/\//.test(f.url ?? "")) erros.push(`fonte inválida em "sources": ${JSON.stringify(f)}`);
+  }
   if (!/^[a-z0-9-]+$/.test(n.slug ?? "")) erros.push(`"slug" só aceita a-z, 0-9 e hífen`);
   if (erros.length) throw new Error(`content/noticias/${arquivo}: ${erros.join("; ")}`);
   return { ...n, featured: Boolean(n.featured), keyPoints: n.keyPoints ?? [] };
