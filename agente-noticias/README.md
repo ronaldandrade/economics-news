@@ -102,7 +102,20 @@ Envia um `POST` JSON com `titulo`, `descricao`, `conteudo_markdown`, `pontos`, `
 
 Cada fonte tem `nome`, `idioma` (`pt` ou `en`), `url` do feed RSS e, opcionalmente, `grupo`: fontes do mesmo veículo com o mesmo `grupo` contam como uma só no critério de `min_fontes`. Quanto mais fontes de países diferentes, melhor o critério "repetido entre sites" separa o que é importante do que é pauta de um veículo só. Feeds de seção (economia) rendem mais que feeds gerais.
 
-## Agendar (2× por dia)
+## Rodar à mão (uma vez por dia)
+
+Depois da instalação, um comando faz tudo:
+
+```bash
+~/projetos/economics-news/agente-noticias/rodar.sh          # coleta, resume e abre o PR
+~/projetos/economics-news/agente-noticias/rodar.sh --seco   # só grava em saida/seco
+```
+
+O script carrega a chave de `~/.config/agente-noticias/env` e avisa se faltar o `.venv`, o `config.json` ou a chave. No fim aparece o link do PR: abra, confira o preview da Vercel e faça o merge.
+
+Se passar mais de um dia sem rodar, aumente `janela_horas` no `config.json` (48 para dois dias), senão as notícias do dia pulado ficam de fora.
+
+## Agendar (2× por dia, opcional)
 
 ```bash
 mkdir -p ~/.config/systemd/user
