@@ -1,3 +1,4 @@
 anthropic>=0.40
 feedparser>=6.0
 trafilatura>=1.6
+lxml_html_clean>=0.4

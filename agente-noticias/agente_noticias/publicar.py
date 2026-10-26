@@ -59,8 +59,14 @@ def git(repo, *args):
 
 
 class PublicadorArquivo:
+    extensao = "mdx"
+
     def __init__(self, cfg, raiz_agente):
-        self.repo = Path(os.path.expanduser(cfg["repositorio"])) if cfg.get("repositorio") else None
+        self.repo = None
+        if cfg.get("repositorio"):
+            repo = Path(os.path.expanduser(cfg["repositorio"]))
+            # caminho relativo é contado a partir da pasta do agente ("..": o repositório do site)
+            self.repo = repo if repo.is_absolute() else (Path(raiz_agente) / repo).resolve()
         base = self.repo or Path(raiz_agente)
         self.pasta = base / cfg.get("pasta", "saida/posts")
         self.git_modo = cfg.get("git", "nenhum") if self.repo else "nenhum"
@@ -79,6 +85,7 @@ class PublicadorArquivo:
             git(self.repo, "fetch", self.remoto, self.branch_base)
             branch = f"{self.prefixo_branch}/{data}"
             existentes = git(self.repo, "branch", "--list", branch)
+            self.branch_original = git(self.repo, "rev-parse", "--abbrev-ref", "HEAD")
             if existentes:
                 git(self.repo, "switch", branch)
             else:
@@ -97,6 +104,10 @@ class PublicadorArquivo:
         self.escritos.append((caminho, post["titulo"]))
         return str(caminho)
 
+    def _voltar_branch(self):
+        if getattr(self, "branch_original", None) and self.branch_original != "HEAD":
+            git(self.repo, "switch", self.branch_original)
+
     def finalizar(self, data):
         if self.git_modo == "nenhum" or not self.escritos:
             return None
@@ -109,6 +120,8 @@ class PublicadorArquivo:
             git(self.repo, "push", self.remoto, "HEAD")
             return {"modo": "commit", "commit": git(self.repo, "rev-parse", "--short", "HEAD")}
         git(self.repo, "push", "-u", self.remoto, self.branch)
+        # devolve o repositório à branch em que estava, para não deixar o usuário na branch do agente
+        self._voltar_branch()
         existente = subprocess.run(["gh", "pr", "view", self.branch, "--json", "url", "-q", ".url"], cwd=self.repo, capture_output=True, text=True)
         if existente.returncode == 0:
             return {"modo": "pr", "url": existente.stdout.strip()}
@@ -121,6 +134,83 @@ class PublicadorArquivo:
         if criado.returncode != 0:
             raise RuntimeError(f"gh pr create falhou: {criado.stderr.strip()}")
         return {"modo": "pr", "url": criado.stdout.strip()}
+
+
+ROTULO_IMPACTO = {"global": "Impacto Mundial Crítico", "regional": "Impacto nos Países Vizinhos"}
+
+
+def juntar_nomes(nomes):
+    return nomes[0] if len(nomes) == 1 else ", ".join(nomes[:-1]) + " e " + nomes[-1]
+
+
+def noticia_para_site(post, data, slug):
+    """Converte o post do agente no formato de content/noticias/*.json do site Next.js."""
+    paragrafos = [p.strip() for p in re.split(r"\n\s*\n", post["corpo"]) if p.strip()]
+    if post.get("divergencias", "").strip():
+        paragrafos.append("Onde as fontes divergem: " + post["divergencias"].strip())
+    paises = post.get("paises") or []
+    alcance = post.get("alcance", "global")
+    fontes = post["fontes"]
+    nomes = [f["nome"] for f in fontes]
+    noticia = {
+        "slug": slug,
+        "date": data,
+        "featured": bool(post.get("destaque")),
+        "impactScope": alcance,
+        "impactLabel": ROTULO_IMPACTO[alcance],
+        "severity": post.get("gravidade", ""),
+        "category": post["editoria"],
+        "kicker": post.get("chapeu", "").upper(),
+        "title": post["titulo"],
+        "subtitle": post["descricao"],
+        "author": "MERIDIAN, com base em " + juntar_nomes(nomes),
+        "location": post.get("local", ""),
+        "readTime": f"{tempo_de_leitura(post['corpo'])} min de leitura",
+        "affectedCountries": paises,
+        "image": post.get("imagem", ""),
+        "imageCaption": f"Foto: {post['credito_imagem']}." if post.get("credito_imagem") else "",
+        "source": " / ".join(nomes),
+        "sourceUrl": fontes[0]["link"],
+        "sources": [{"name": f["nome"], "title": f["titulo"], "url": f["link"]} for f in fontes],
+        "keyPoints": post["pontos"],
+        "body": paragrafos,
+        "generatedByAI": True,
+    }
+    if alcance == "regional":
+        noticia["inRadar"] = True
+        noticia["corridorTag"] = " • ".join(p.upper() for p in paises[:3])
+    return noticia
+
+
+class PublicadorSiteJSON(PublicadorArquivo):
+    """Grava cada post como content/noticias/AAAA-MM-DD_slug.json no repositório do site."""
+
+    extensao = "json"
+
+    def __init__(self, cfg, raiz_agente):
+        super().__init__({"pasta": "content/noticias", **cfg, "separador_slug": "-"}, raiz_agente)
+
+    def _slugs_existentes(self):
+        slugs = set()
+        for arquivo in self.pasta.glob("*.json"):
+            try:
+                slugs.add(json.loads(arquivo.read_text(encoding="utf-8")).get("slug"))
+            except (OSError, ValueError):
+                continue
+        return slugs
+
+    def publicar(self, post, data):
+        self.pasta.mkdir(parents=True, exist_ok=True)
+        base = gerar_slug(post["titulo"], "-")
+        existentes = self._slugs_existentes()
+        slug, n = base, 2
+        while slug in existentes:
+            slug, n = f"{base}-{n}", n + 1
+        caminho = self.pasta / f"{data}_{slug}.json"
+        noticia = noticia_para_site(post, data, slug)
+        caminho.write_text(json.dumps(noticia, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        self.escritos.append((caminho, post["titulo"]))
+        return str(caminho)
 
 
 class PublicadorHTTP:
@@ -153,6 +243,8 @@ def criar_publicador(cfg, raiz_agente):
     tipo = cfg.get("tipo", "arquivo")
     if tipo == "arquivo":
         return PublicadorArquivo(cfg, raiz_agente)
+    if tipo == "site_json":
+        return PublicadorSiteJSON(cfg, raiz_agente)
     if tipo == "http":
         return PublicadorHTTP(cfg, raiz_agente)
     raise ValueError(f"tipo de publicação desconhecido: {tipo}")

@@ -1,12 +1,12 @@
 # agente-noticias
 
-Agente que lê vários sites de notícias, encontra os acontecimentos de economia mundial que **aparecem em mais de um site**, escreve um resumo em português juntando o que cada fonte diz e publica no seu site.
+Agente que lê vários sites de notícias, encontra os acontecimentos de economia mundial que **aparecem em mais de um site**, escreve um resumo em português juntando o que cada fonte diz e publica no site MERIDIAN (a pasta acima, `economics-news`) como JSON em `content/noticias/`.
 
 ```
 fontes.json ──► 1. coletar ──► 2. agrupar ──► 3. resumir ──► 4. verificar ──► 5. publicar
- (RSS)          manchetes      mesmo fato     texto novo     números e      MDX no repo (PR)
+ (RSS)          manchetes      mesmo fato     texto novo     números e      JSON do site (PR)
                 das últimas    em ≥ 2 sites   com fontes     estilo         ou API do site
-                24 h           (pt e en)      atribuídas         │
+                24 h           (pt e en)      atribuídas         │          (MDX ou API)
                                                                  └─ falhou 2× ─► saida/revisar/
 ```
 
@@ -14,21 +14,21 @@ fontes.json ──► 1. coletar ──► 2. agrupar ──► 3. resumir ─�
 
 | Etapa | Arquivo | Quem decide | O que faz |
 |---|---|---|---|
-| Coletar | `coletar.py` | código | Lê os feeds RSS de `fontes.json`, fica com as manchetes da janela (`janela_horas`), remove duplicatas e parâmetros de rastreio (`utm_*`) dos links. Um feed fora do ar não derruba os outros. |
-| Agrupar | `agrupar.py` | IA + código | O modelo recebe todas as manchetes numeradas e junta as que tratam do **mesmo fato**, inclusive entre português e inglês, descartando o que não é economia mundial. O código então confere: descarta números de itens inventados, impede item em dois grupos e **exige `min_fontes` sites diferentes**. Os grupos são ordenados por número de sites, depois relevância, depois recência. |
+| Coletar | `coletar.py` | código | Lê os feeds RSS de `fontes.json`, fica com as manchetes da janela (`janela_horas`), remove duplicatas e parâmetros de rastreio (`utm_*`) dos links e guarda a maior imagem que o feed oferece. Descompacta feeds em gzip. Um feed fora do ar não derruba os outros. |
+| Agrupar | `agrupar.py` | IA + código | O modelo recebe todas as manchetes numeradas e junta as que tratam do **mesmo fato**, inclusive entre português e inglês, descartando o que não é economia mundial. O código então confere: descarta números de itens inventados, impede item em dois grupos e **exige `min_fontes` veículos diferentes** (fontes com o mesmo `grupo`, como BBC Business e BBC News Brasil, contam como um). Os grupos são ordenados por número de veículos, depois relevância, depois recência. |
 | Não repetir | `estado.py` | IA + código | `dados/estado.json` guarda o que foi publicado nos últimos `dias_memoria` dias. Um grupo é descartado se metade dos links já foi publicada ou se o modelo marca que é o mesmo acontecimento sem fato novo. |
-| Resumir | `extrair.py`, `resumir.py` | IA | Baixa o texto de cada artigo (com `trafilatura`; se der paywall, usa o resumo do feed) e pede um resumo original, com números atribuídos às fontes e um campo de divergências. |
+| Resumir | `extrair.py`, `resumir.py` | IA | Baixa o texto e o `og:image` de cada artigo (com `trafilatura`; se der paywall, usa o resumo e a imagem do feed) e pede um resumo original, com números atribuídos às fontes, um campo de divergências e a classificação do site: alcance (`global`/`regional`), editoria, chapéu, gravidade, local e países afetados. |
 | Verificar | `verificar.py` | código | **Todo número do resumo precisa aparecer em alguma fonte** (aceita 4.5 = 4,5 e 1,200 = 1.200). Também barra travessão, "vale ressaltar", "papel fundamental" e outros padrões da skill `humanizar`. Se falhar, o modelo recebe a lista de problemas e tenta de novo; se falhar outra vez, o post vai para `saida/revisar/` e **não é publicado**. |
-| Publicar | `publicar.py` | código | Grava o `.mdx` (frontmatter + resumo + "Em resumo" + divergências + lista de fontes com links) ou envia para a API do site. |
+| Publicar | `publicar.py` | código | Grava `content/noticias/AAAA-MM-DD_slug.json` no formato do site (com imagem, fontes e a marca `generatedByAI`) e abre um PR. O acontecimento mais repetido da execução vira manchete (`featured`). Também sabe gravar `.mdx` ou enviar para uma API. |
 
 A IA nunca decide sozinha o que é verdade: as regras que importam (mínimo de fontes, números com fonte, não repetir) são verificadas em código.
 
 ## Instalação
 
+O agente fica dentro do repositório do site e publica nele (`"repositorio": ".."`).
+
 ```bash
-cd ~
-# copie a pasta agente-noticias para ~/agente-noticias
-cd ~/agente-noticias
+cd ~/projetos/economics-news/agente-noticias
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 cp config.exemplo.json config.json
@@ -37,7 +37,7 @@ install -m 600 /dev/null ~/.config/agente-noticias/env
 echo 'ANTHROPIC_API_KEY=sk-ant-...' > ~/.config/agente-noticias/env
 ```
 
-Teste os feeds (as URLs de `fontes.json` não puderam ser testadas daqui; remova as que falharem):
+Teste os feeds (em 26/10/2026 as 11 responderam; remova as que passarem a falhar):
 
 ```bash
 .venv/bin/python -m agente_noticias verificar-feeds
@@ -50,7 +50,7 @@ set -a; . ~/.config/agente-noticias/env; set +a
 .venv/bin/python -m agente_noticias executar --seco
 ```
 
-Leia os arquivos em `saida/seco/`. Rode umas 3 ou 4 vezes em dias diferentes antes de ligar a publicação.
+Leia os JSON em `saida/seco/`. Para ver como ficam no site, copie um para `../content/noticias/` e rode `npm run dev` na pasta do site (apague a cópia depois). Rode umas 3 ou 4 vezes em dias diferentes antes de ligar a publicação.
 
 ## Configuração (`config.json`)
 
@@ -63,26 +63,28 @@ Leia os arquivos em `saida/seco/`. Rode umas 3 ou 4 vezes em dias diferentes ant
 | `dias_memoria` | 5 | por quantos dias um evento publicado bloqueia repetição |
 | `modelos.agrupar` / `modelos.resumir` | `claude-haiku-5-5` | troque `resumir` por `claude-sonnet-5-5` para textos melhores, a ~10× o custo |
 
-### Publicar no blog (Next.js + MDX, como o `portfolio-math`)
+### Publicar no site MERIDIAN (padrão)
 
 ```json
 "publicacao": {
-  "tipo": "arquivo",
-  "repositorio": "~/projetos/economics-news",
-  "pasta": "src/content/posts",
+  "tipo": "site_json",
+  "repositorio": "..",
+  "pasta": "content/noticias",
   "git": "pr",
-  "separador_slug": "_",
-  "frontmatter_extra": {"author": "Ronald Andrade", "difficulty": "beginner"},
-  "aviso_ia": true
+  "branch_base": "main"
 }
 ```
 
-`git` aceita:
-- `"pr"`: cria a branch `noticias/AAAA-MM-DD`, commita, faz push e abre um PR com `gh`. A Vercel gera o preview e **você faz o merge**. Recomendado.
+Caminho relativo em `repositorio` é contado a partir da pasta do agente. Cada post vira um JSON validado pelo build do site; se o slug já existir, ganha o sufixo `-2`. `git` aceita:
+- `"pr"`: cria a branch `noticias/AAAA-MM-DD` a partir de `origin/main`, commita os JSON, faz push, abre um PR com `gh` e **devolve o repositório à branch em que estava**. A Vercel gera o preview e **você faz o merge**. Recomendado.
 - `"commit"`: commita e faz push direto na branch atual. Se for a `main`, publica sem revisão.
 - `"nenhum"`: só grava os arquivos.
 
-O repositório precisa estar sem alterações pendentes, e o `gh` precisa estar logado (`gh auth login`). O MDX gerado passa no validador do blog (`validar_post.mjs`).
+O repositório precisa estar sem alterações pendentes em arquivos versionados na hora da execução (o agente recusa e não publica), e o `gh` precisa estar logado (`gh auth login`).
+
+### Publicar como MDX (blog Next.js)
+
+Use `"tipo": "arquivo"` com `"pasta": "src/content/posts"`, `"separador_slug": "_"` e `"frontmatter_extra"`. Grava frontmatter + resumo + "Em resumo" + divergências + fontes. As opções de `git` são as mesmas.
 
 ### Publicar em outro site (API)
 
@@ -98,7 +100,7 @@ Envia um `POST` JSON com `titulo`, `descricao`, `conteudo_markdown`, `pontos`, `
 
 ### Fontes (`fontes.json`)
 
-Cada fonte tem `nome`, `idioma` (`pt` ou `en`) e `url` do feed RSS. Quanto mais fontes de países diferentes, melhor o critério "repetido entre sites" separa o que é importante do que é pauta de um veículo só. Feeds de seção (economia) rendem mais que feeds gerais.
+Cada fonte tem `nome`, `idioma` (`pt` ou `en`), `url` do feed RSS e, opcionalmente, `grupo`: fontes do mesmo veículo com o mesmo `grupo` contam como uma só no critério de `min_fontes`. Quanto mais fontes de países diferentes, melhor o critério "repetido entre sites" separa o que é importante do que é pauta de um veículo só. Feeds de seção (economia) rendem mais que feeds gerais.
 
 ## Agendar (2× por dia)
 
@@ -124,7 +126,7 @@ Com Haiku 5.5 e 11 fontes, cada execução usa cerca de 20 a 40 mil tokens: meno
 .venv/bin/python -m pytest -q tests
 ```
 
-Os testes rodam sem internet e sem chave de API: usam feeds de exemplo em `tests/fixtures/` (com uma fonte quebrada de propósito) e um cliente de IA falso. Cobrem coleta, agrupamento, a checagem de números, a nova tentativa, o envio para revisão, a publicação por PR num repositório Git local e o bloqueio de repetição na segunda execução.
+Os 17 testes rodam sem internet e sem chave de API: usam feeds de exemplo em `tests/fixtures/` (com uma fonte quebrada de propósito) e um cliente de IA falso. Cobrem coleta (imagem do feed, gzip), agrupamento por veículo, a checagem de números, a nova tentativa, o envio para revisão, o JSON no formato do site, a publicação por PR num repositório Git local (MDX e JSON, com slug repetido) e o bloqueio de repetição na segunda execução.
 
 ## Limitações
 
@@ -132,4 +134,7 @@ Os testes rodam sem internet e sem chave de API: usam feeds de exemplo em `tests
 - **A checagem de números não pega atribuição errada.** Se a fonte A diz 4,5% e o resumo atribui o número à fonte B, passa. Por isso o modo `pr` é o padrão.
 - **Paywall.** Sites fechados entregam só o resumo do feed; o texto do post fica mais raso para esse acontecimento.
 - **Direitos autorais.** O agente escreve um texto próprio e linka as fontes, com no máximo uma citação curta. Não altere o prompt para reproduzir os artigos.
-- **Feeds mudam.** Rode `verificar-feeds` quando uma fonte parar de aparecer nos relatórios.
+- **Feeds mudam.** Rode `verificar-feeds` quando uma fonte parar de aparecer nos relatórios. Feeds sem data (como o da Nikkei Asia) ficam de fora, porque o filtro de janela deixaria passar matérias antigas.
+- **Imagens.** Vêm do `og:image` da fonte ou do feed; algumas (Guardian) trazem a marca do veículo no canto. Sem imagem, o site mostra o SVG de reserva.
+- **Classificação.** Alcance, editoria e países são escolhidos pela IA a partir das fontes; o código só confere o formato. Revise no PR.
+- **Sem chamada real testada.** Os testes usam um cliente falso; a primeira execução com a API deve ser em `--seco`.

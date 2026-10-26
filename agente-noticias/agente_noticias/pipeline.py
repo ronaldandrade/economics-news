@@ -10,6 +10,13 @@ from .publicar import PublicadorArquivo, criar_publicador
 from .resumir import resumir
 
 
+def destino_local(cfg_publicacao, pasta, raiz):
+    """Grava na pasta do agente, no mesmo formato da publicação (JSON do site ou MDX), sem git."""
+    if cfg_publicacao.get("tipo") == "site_json":
+        return criar_publicador({"tipo": "site_json", "pasta": pasta}, raiz)
+    return PublicadorArquivo({"pasta": pasta}, raiz)
+
+
 def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
     agora = agora or datetime.now(timezone.utc)
     data = agora.astimezone().strftime("%Y-%m-%d")
@@ -44,9 +51,12 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
 
     log("== publicando" + (" (modo seco: só grava em saida/seco)" if seco else ""))
     publicados = []
-    destino_seco = PublicadorArquivo({"pasta": "saida/seco"}, raiz)
-    destino_revisar = PublicadorArquivo({"pasta": "saida/revisar"}, raiz)
+    destino_seco = destino_local(cfg["publicacao"], "saida/seco", raiz)
+    destino_revisar = destino_local(cfg["publicacao"], "saida/revisar", raiz)
     prontos = [p for p in posts if p["status"] == "pronto"]
+    if prontos:
+        # o acontecimento mais repetido entre os veículos vira a manchete do site
+        prontos[0]["destaque"] = True
     publicador = None
     if prontos and not seco:
         publicador = criar_publicador(cfg["publicacao"], raiz)

@@ -67,6 +67,8 @@ def validar_grupos(brutos, itens):
             continue
         membros = [por_id[i] for i in ids]
         fontes = sorted({m.fonte for m in membros})
+        # BBC Business e BBC News Brasil são o mesmo veículo: contam como uma fonte só
+        veiculos = sorted({m.veiculo or m.fonte for m in membros})
         datas = [m.publicado for m in membros if m.publicado]
         grupos.append({
             "evento": str(g.get("evento", "")).strip(),
@@ -75,6 +77,7 @@ def validar_grupos(brutos, itens):
             "repete_publicado": bool(g.get("repete_publicado", False)),
             "itens": membros,
             "fontes": fontes,
+            "veiculos": veiculos,
             "mais_recente": max(datas) if datas else "",
         })
     return grupos
@@ -87,11 +90,11 @@ def ranquear(grupos, min_fontes, max_posts, links_publicados):
         sobreposicao = len(links & links_publicados) / len(links)
         if g["repete_publicado"] or sobreposicao >= 0.5:
             descartados.append((g["evento"], "já publicado"))
-        elif len(g["fontes"]) < min_fontes:
-            descartados.append((g["evento"], f"{len(g['fontes'])} fonte(s), mínimo {min_fontes}"))
+        elif len(g["veiculos"]) < min_fontes:
+            descartados.append((g["evento"], f"{len(g['veiculos'])} veículo(s), mínimo {min_fontes}"))
         else:
             candidatos.append(g)
-    candidatos.sort(key=lambda g: (len(g["fontes"]), g["relevancia"], g["mais_recente"]), reverse=True)
+    candidatos.sort(key=lambda g: (len(g["veiculos"]), g["relevancia"], g["mais_recente"]), reverse=True)
     return candidatos[:max_posts], descartados
 
 

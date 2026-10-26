@@ -1,6 +1,6 @@
 {
   "fontes": [
-    {"nome": "BBC Business", "idioma": "en", "url": "https://feeds.bbci.co.uk/news/business/rss.xml"},
+    {"nome": "BBC Business", "idioma": "en", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "grupo": "BBC"},
     {"nome": "The Guardian Economics", "idioma": "en", "url": "https://www.theguardian.com/business/economics/rss"},
     {"nome": "CNBC Economy", "idioma": "en", "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html"},
     {"nome": "NYT Economy", "idioma": "en", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml"},
@@ -9,7 +9,7 @@
     {"nome": "Al Jazeera", "idioma": "en", "url": "https://www.aljazeera.com/xml/rss/all.xml"},
     {"nome": "g1 Economia", "idioma": "pt", "url": "https://g1.globo.com/rss/g1/economia/"},
     {"nome": "InfoMoney", "idioma": "pt", "url": "https://www.infomoney.com.br/feed/"},
-    {"nome": "BBC News Brasil", "idioma": "pt", "url": "https://feeds.bbci.co.uk/portuguese/rss.xml"},
-    {"nome": "CNN Brasil Economia", "idioma": "pt", "url": "https://www.cnnbrasil.com.br/economia/feed/"}
+    {"nome": "BBC News Brasil", "idioma": "pt", "url": "https://feeds.bbci.co.uk/portuguese/rss.xml", "grupo": "BBC"},
+    {"nome": "South China Morning Post", "idioma": "en", "url": "https://www.scmp.com/rss/92/feed"}
   ]
 }

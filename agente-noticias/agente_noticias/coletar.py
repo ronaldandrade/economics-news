@@ -1,4 +1,5 @@
 import calendar
+import gzip
 import html
 import re
 import urllib.parse
@@ -23,6 +24,8 @@ class Item:
     descricao: str
     link: str
     publicado: str
+    veiculo: str = ""
+    imagem: str = ""
 
     def para_dict(self):
         return asdict(self)
@@ -49,7 +52,11 @@ def baixar(url, timeout=20):
         return Path(url.replace("file://", "")).read_bytes()
     pedido = urllib.request.Request(url, headers={"User-Agent": AGENTE_HTTP, "Accept": "application/rss+xml, application/xml, text/xml, */*"})
     with urllib.request.urlopen(pedido, timeout=timeout) as resposta:
-        return resposta.read()
+        conteudo = resposta.read()
+    # alguns sites (g1) mandam gzip mesmo sem o pedido aceitar; o urllib não descompacta sozinho
+    if conteudo[:2] == b"\x1f\x8b":
+        conteudo = gzip.decompress(conteudo)
+    return conteudo
 
 
 def data_da_entrada(entrada):
@@ -58,6 +65,23 @@ def data_da_entrada(entrada):
         if valor:
             return datetime.fromtimestamp(calendar.timegm(valor), tz=timezone.utc)
     return None
+
+
+def imagem_da_entrada(entrada):
+    """Maior imagem que o feed oferece (media:content, media:thumbnail ou enclosure)."""
+    candidatas = []
+    for m in entrada.get("media_content") or []:
+        if m.get("url") and (m.get("medium") == "image" or (m.get("type") or "image").startswith("image")):
+            candidatas.append((int(m.get("width") or 0), m["url"]))
+    for m in entrada.get("media_thumbnail") or []:
+        if m.get("url"):
+            candidatas.append((int(m.get("width") or 0), m["url"]))
+    for l in entrada.get("links") or []:
+        if l.get("rel") == "enclosure" and (l.get("type") or "").startswith("image") and l.get("href"):
+            candidatas.append((0, l["href"]))
+    if not candidatas:
+        return ""
+    return max(candidatas, key=lambda c: c[0])[1]
 
 
 def ler_fonte(fonte, timeout=20):
@@ -103,6 +127,8 @@ def coletar(fontes, janela_horas=24, max_por_fonte=30, agora=None, timeout=20, l
                 descricao=descricao,
                 link=limpar_link(link),
                 publicado=publicado.isoformat() if publicado else "",
+                veiculo=fonte.get("grupo", fonte["nome"]),
+                imagem=imagem_da_entrada(entrada),
             ))
             aceitos += 1
         por_fonte[fonte["nome"]] = aceitos

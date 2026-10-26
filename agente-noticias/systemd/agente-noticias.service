@@ -5,6 +5,6 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=%h/agente-noticias
+WorkingDirectory=%h/projetos/economics-news/agente-noticias
 EnvironmentFile=%h/.config/agente-noticias/env
-ExecStart=%h/agente-noticias/.venv/bin/python -m agente_noticias executar
+ExecStart=%h/projetos/economics-news/agente-noticias/.venv/bin/python -m agente_noticias executar

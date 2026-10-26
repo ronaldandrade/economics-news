@@ -11,18 +11,20 @@
     "resumir": "claude-haiku-5-5"
   },
   "precos_por_milhao": {
-    "claude-haiku-5-5": [0.10, 0.50],
-    "claude-sonnet-5-5": [2.00, 10.00]
+    "claude-haiku-5-5": [
+      0.1,
+      0.5
+    ],
+    "claude-sonnet-5-5": [
+      2.0,
+      10.0
+    ]
   },
   "publicacao": {
-    "tipo": "arquivo",
-    "pasta": "saida/posts",
-    "repositorio": null,
-    "git": "nenhum",
-    "separador_slug": "-",
-    "frontmatter_extra": {
-      "author": "Ronald Andrade"
-    },
-    "aviso_ia": true
+    "tipo": "site_json",
+    "repositorio": "..",
+    "pasta": "content/noticias",
+    "git": "pr",
+    "branch_base": "main"
   }
 }

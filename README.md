@@ -58,10 +58,14 @@ Campos de cada notícia:
 | `keyPoints` | não | lista "Por que este evento importa" |
 | `author`, `location`, `readTime` | sim | assinatura |
 | `affectedCountries` | sim | chips de países |
-| `image`, `imageCaption` | `image` sim | URL da imagem publicada pela fonte |
+| `image`, `imageCaption` | não | URL da imagem publicada pela fonte; sem ela aparece o SVG de reserva |
 | `source`, `sourceUrl` | sim | nome e link da matéria original (`https://`) |
+| `sources` | não | lista `{name, title, url}` quando o resumo junta várias fontes; a página mostra todas |
+| `generatedByAI` | não | `true` mostra o aviso "Resumo produzido com auxílio de IA" |
 
 **Publicar uma notícia nova** é adicionar um arquivo JSON e fazer o merge na `main`: a Vercel refaz o build e a matéria ganha página própria e entrada no sitemap. As antigas continuam no ar com o mesmo endereço.
+
+**Agente de notícias.** `agente-noticias/` lê 11 feeds RSS, junta os fatos noticiados por pelo menos 2 veículos, escreve o resumo com a API da Anthropic e grava os JSON neste formato numa branch `noticias/AAAA-MM-DD`, abrindo um PR. Você revisa o preview da Vercel e faz o merge. Instalação, agendamento e custo estão em `agente-noticias/README.md`.
 
 **Capa.** `page.tsx` carrega as 60 mais recentes e manda ao navegador só o necessário para os cartões e a busca. A manchete é a mais recente com `featured: true` (ou a mais recente de todas). Os filtros de impacto e editoria e a busca rodam no navegador. Os links do rodapé usam `/?impacto=global` e `/?impacto=regional`.
 
@@ -71,8 +75,8 @@ Campos de cada notícia:
 
 ## Limitações
 
-- O `agente-noticias` ainda grava MDX no formato de blog, não os JSON de `content/noticias/`. Até ele ser adaptado, as notícias novas precisam ser criadas à mão.
+- O agente ainda não rodou com a API real: os testes usam um cliente de IA falso. Faça a primeira execução com `--seco`.
 - As imagens dependem dos sites das fontes. Se uma fonte remover a imagem ou bloquear o uso externo, a matéria passa a mostrar o SVG de reserva.
 - A busca procura só nas 60 matérias da capa.
-- `instalar_agente_noticias.sh` é uma cópia empacotada do agente; se `agente-noticias/` mudar, o script fica desatualizado.
+- `instalar_agente_noticias.sh` é uma cópia empacotada da versão anterior do agente (grava MDX e instala em `~/agente-noticias`); não reflete o `agente-noticias/` atual.
 - Sem testes automatizados para o site; a verificação é o `npm run build` (que valida o conteúdo) e o `npm run lint`.

@@ -1,5 +1,8 @@
 from .verificar import checar
 
+# Mesmas editorias de src/lib/tipos.ts do site
+EDITORIAS = ["Macroeconomia", "Geopolítica & Fronteiras", "Energia & Recursos", "Comércio & Logística", "Tecnologia & Soberania"]
+
 SISTEMA = """Você é jornalista de economia e escreve em português do Brasil para um público curioso, mas não especialista.
 
 Você recebe o mesmo acontecimento contado por vários sites. Escreva um resumo original que junte o que as fontes dizem.
@@ -18,7 +21,14 @@ Direitos autorais:
 Estilo:
 - Frases diretas. Comece pelo fato principal, sem introdução.
 - Proibido: travessão, "não é só X, é Y", "vale ressaltar", "é importante destacar", "papel fundamental", "crucial", "cenário", "panorama", frase final de efeito ("resta saber", "o futuro é promissor"), negrito, emoji.
-- "corpo" em Markdown simples, de 3 a 5 parágrafos, sem títulos."""
+- "corpo" em Markdown simples, de 3 a 5 parágrafos, sem títulos.
+
+Classificação para o site:
+- "alcance": "global" quando o fato mexe com mercados, cadeias ou economias de vários continentes; "regional" quando o efeito direto é num país e nos vizinhos ou num bloco.
+- "chapeu": 2 a 4 palavras que nomeiam o assunto (ex.: "CHOQUE ENERGÉTICO", "BARREIRA COMERCIAL").
+- "gravidade": rótulo curto do tipo de risco (ex.: "Risco Energético Alto", "Tensão Comercial").
+- "local": cidade ou país de onde o fato foi noticiado, como aparece nas fontes.
+- "paises": países ou blocos afetados citados nas fontes, em português."""
 
 FERRAMENTA = {
     "nome": "registrar_resumo",
@@ -32,8 +42,14 @@ FERRAMENTA = {
             "pontos": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 5},
             "divergencias": {"type": "string", "description": "Onde as fontes discordam. Vazio se concordam."},
             "tags": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 5},
+            "alcance": {"type": "string", "enum": ["global", "regional"]},
+            "editoria": {"type": "string", "enum": EDITORIAS},
+            "chapeu": {"type": "string", "description": "Até 40 caracteres, em maiúsculas."},
+            "gravidade": {"type": "string", "description": "Até 40 caracteres."},
+            "local": {"type": "string"},
+            "paises": {"type": "array", "items": {"type": "string"}, "minItems": 1, "maxItems": 6},
         },
-        "required": ["titulo", "descricao", "corpo", "pontos", "divergencias", "tags"],
+        "required": ["titulo", "descricao", "corpo", "pontos", "divergencias", "tags", "alcance", "editoria", "chapeu", "gravidade", "local", "paises"],
     },
 }
 
@@ -62,6 +78,10 @@ def resumir(llm, modelo, grupo, material, tentativas=2):
     post["problemas"] = problemas
     post["status"] = "pronto" if not problemas else "revisar"
     post["fontes"] = [{"nome": m["fonte"], "titulo": m["titulo"], "link": m["link"]} for m in material]
+    # Imagem da primeira fonte que tiver uma; o crédito vai para essa fonte
+    com_imagem = next((m for m in material if m.get("imagem")), None)
+    post["imagem"] = com_imagem["imagem"] if com_imagem else ""
+    post["credito_imagem"] = com_imagem["fonte"] if com_imagem else ""
     post["evento"] = grupo["evento"]
     post["categoria"] = grupo["categoria"]
     return post

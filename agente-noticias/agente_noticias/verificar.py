@@ -68,7 +68,10 @@ def problemas_de_estilo(texto):
 
 def checar(post, material):
     textos = [m["titulo"] + " " + m["texto"] for m in material]
-    corpo = " ".join([post.get("titulo", ""), post.get("descricao", ""), post.get("corpo", ""), " ".join(post.get("pontos", [])), post.get("divergencias", "")])
+    corpo = " ".join([
+        post.get("titulo", ""), post.get("descricao", ""), post.get("corpo", ""), " ".join(post.get("pontos", [])),
+        post.get("divergencias", ""), post.get("chapeu", ""), post.get("gravidade", ""),
+    ])
     problemas = []
     faltando = numeros_sem_fonte(corpo, textos)
     if faltando:
@@ -78,4 +81,8 @@ def checar(post, material):
         problemas.append(f"título com {len(post['titulo'])} caracteres (máximo 100)")
     if not 60 <= len(post.get("descricao", "")) <= 260:
         problemas.append(f"descrição com {len(post.get('descricao', ''))} caracteres (entre 60 e 260)")
+    if "chapeu" in post and len(post["chapeu"]) > 40:
+        problemas.append(f"chapéu com {len(post['chapeu'])} caracteres (máximo 40)")
+    if "gravidade" in post and len(post["gravidade"]) > 40:
+        problemas.append(f"gravidade com {len(post['gravidade'])} caracteres (máximo 40)")
     return problemas
