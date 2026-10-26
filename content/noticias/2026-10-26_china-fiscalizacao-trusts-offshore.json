@@ -1,0 +1,35 @@
+{
+  "slug": "china-fiscalizacao-trusts-offshore",
+  "date": "2026-10-26",
+  "featured": false,
+  "inRadar": true,
+  "corridorTag": "CHINA • PARAÍSOS FISCAIS",
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Fiscalização Ampliada",
+  "category": "Macroeconomia",
+  "kicker": "FLUXOS DE CAPITAL",
+  "title": "Fisco chinês manda declarar trusts offshore após fim do prazo de graça",
+  "subtitle": "Autoridades de Pequim notificaram 21 pessoas na quinta-feira, último dia do período de 90 dias para declarar ativos no exterior.",
+  "author": "Emma Ma",
+  "location": "Pequim",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "China",
+    "Hong Kong"
+  ],
+  "image": "https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/10/26/b3512365-c916-4ab9-b254-038038ba2f6b_5d442b52.jpg?itok=9AfTPOZB&v=1793009405",
+  "imageCaption": "Foto: South China Morning Post.",
+  "source": "South China Morning Post",
+  "sourceUrl": "https://www.scmp.com/economy/china-economy/article/3372178/chinas-tax-offices-issue-disclosure-orders-offshore-asset-grace-period-ends",
+  "keyPoints": [
+    "O prazo de 90 dias para declarar trusts offshore terminou na quinta-feira passada.",
+    "As autoridades tributárias municipais de Pequim publicaram avisos a 21 pessoas, exigindo a documentação fiscal desses trusts.",
+    "Escritórios locais de todo o país continuam intensificando a fiscalização."
+  ],
+  "body": [
+    "Escritórios tributários locais em toda a China seguem reforçando a supervisão depois que expirou, na quinta-feira passada, o prazo de graça para o reporte de trusts offshore. A medida faz parte de uma campanha para estimular a declaração voluntária de impostos.",
+    "As autoridades fiscais municipais de Pequim publicaram em seu site oficial avisos a 21 pessoas, no último dia do período de 90 dias, ordenando que apresentem a documentação tributária ligada a trusts no exterior.",
+    "Os detalhes sobre o alcance das notificações e os próximos passos estão na matéria original do SCMP."
+  ]
+}

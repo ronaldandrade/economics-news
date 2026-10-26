@@ -1,0 +1,39 @@
+{
+  "slug": "gas-europa-maxima-quatro-anos",
+  "date": "2026-10-26",
+  "featured": true,
+  "impactScope": "global",
+  "impactLabel": "Impacto Mundial Crítico",
+  "severity": "Risco Energético Alto",
+  "category": "Energia & Recursos",
+  "kicker": "CHOQUE ENERGÉTICO",
+  "title": "Preço do gás na Europa dispara para a máxima em quatro anos com temor de oferta no inverno",
+  "subtitle": "Atacado chega a €97 por MWh com a tensão no Oriente Médio; o Brent segue perto de US$ 115 e os estoques europeus estão no menor nível em mais de uma década.",
+  "author": "The Guardian",
+  "location": "Londres",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Reino Unido",
+    "Zona do Euro",
+    "Catar",
+    "Irã",
+    "Estados Unidos",
+    "Israel"
+  ],
+  "image": "https://i.guim.co.uk/img/media/275f98d8c2bcb343ced7e3b49bd547734a4db6f9/865_0_6406_5124/master/6406.jpg?width=700&quality=85&auto=format&fit=max&s=407897bc239d82708caa3208b54f9b61",
+  "imageCaption": "Foto: The Guardian.",
+  "source": "The Guardian",
+  "sourceUrl": "https://www.theguardian.com/business/2026/oct/26/european-gas-prices-four-year-high-winter-supply-fears-middle-east",
+  "keyPoints": [
+    "O gás no atacado europeu chegou a €97 por megawatt-hora na segunda-feira; o contrato do Reino Unido para o mês seguinte subiu 4%, a 240 pence por therm, o maior valor desde dezembro de 2022.",
+    "Relatos de que EUA e Israel preparam novos ataques ao Irã após as eleições legislativas americanas levaram o petróleo a até US$ 117 por barril na sexta-feira; o Brent recuou cerca de 2% e segue perto de US$ 115.",
+    "Os estoques europeus estão em cerca de 75%, abaixo da média sazonal de 80%, o menor nível em mais de uma década, com menos exportações do Catar."
+  ],
+  "body": [
+    "Os preços do gás na Europa chegaram a níveis que não se viam desde 2022, com a preocupação crescente sobre o abastecimento do continente neste inverno e sobre o conflito no Oriente Médio. Na segunda-feira, o atacado atingiu €97 por megawatt-hora, enquanto a queda das temperaturas elevou a expectativa de demanda por aquecimento.",
+    "O movimento ocorre em meio a relatos de que Estados Unidos e Israel prepararam planos para novos ataques ao Irã depois das eleições legislativas americanas. As notícias levaram o petróleo a até US$ 117 por barril na sexta-feira. O Brent recuou cerca de 2% na segunda, mas continua perto de US$ 115.",
+    "A Europa entra no inverno com os estoques mais baixos em mais de dez anos, por causa da desaceleração das exportações do Catar e do maior consumo no verão. Os reservatórios estão em cerca de 75% da capacidade, contra uma média sazonal próxima de 80%.",
+    "No Reino Unido, os reguladores de energia dizem que o país deve pagar alguns dos custos mais altos da Europa neste inverno, por depender de importações e ter algumas das menores reservas do continente. As contas das famílias devem subir 16% em janeiro, para cerca de £ 2.000 por ano no consumo típico de gás e eletricidade.",
+    "As bolsas europeias subiram levemente com o recuo do petróleo: o Stoxx Europe 600 avançava 0,3% no início do pregão e o FTSE 100, 0,4%."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "slug": "anthropic-pedido-de-ipo",
+  "date": "2026-10-26",
+  "featured": false,
+  "inRadar": true,
+  "corridorTag": "ESTADOS UNIDOS • MERCADO GLOBAL DE IA",
+  "impactScope": "global",
+  "impactLabel": "Impacto Mundial Crítico",
+  "severity": "Teste para o Boom da IA",
+  "category": "Macroeconomia",
+  "kicker": "MERCADO DE CAPITAIS",
+  "title": "Anthropic revela receita em disparada e prejuízo maior em pedido de abertura de capital",
+  "subtitle": "A estreia, avaliada em mais de US$ 1,5 trilhão, será uma das maiores da história e um teste da viabilidade financeira da inteligência artificial.",
+  "author": "The Guardian",
+  "location": "São Francisco",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Estados Unidos",
+    "Global"
+  ],
+  "image": "https://i.guim.co.uk/img/media/445e90b032229c54129ea99217bf19c2cdd0d1a3/315_0_4582_3666/master/4582.jpg?width=700&quality=85&auto=format&fit=max&s=fcbc12f354cb17a2a67e2a74e5e02a68",
+  "imageCaption": "Foto: The Guardian.",
+  "source": "The Guardian",
+  "sourceUrl": "https://www.theguardian.com/technology/2026/oct/26/anthropic-files-listing-stock-market",
+  "keyPoints": [
+    "Receita de US$ 41 milhões em 2023, US$ 386 milhões em 2024, US$ 4,585 bilhões em 2025 e US$ 16,286 bilhões só no primeiro semestre de 2026.",
+    "Prejuízo líquido de US$ 80 bilhões no primeiro semestre de 2026; a empresa havia captado US$ 141,1 bilhões até o fim de junho.",
+    "Mais de 14 mil clientes corporativos em 30 de setembro, cerca de 250 deles com receita de US$ 10 milhões ou mais."
+  ],
+  "body": [
+    "A Anthropic protocolou publicamente o pedido de listagem em bolsa, o que deve resultar em uma das maiores estreias da história. A oferta no mercado americano servirá de teste para a viabilidade financeira do boom de IA, que soma trilhões de dólares. Analistas e investidores avaliam a empresa, fundada em 2021 e sediada em São Francisco, em mais de US$ 1,5 trilhão. Ela negociará sob o símbolo ANT e havia protocolado o pedido de forma confidencial em junho.",
+    "Os balanços auditados do prospecto dão o primeiro retrato público da saúde financeira da empresa, tema de intensa especulação nos últimos meses em meio ao debate sobre uma possível bolha de IA.",
+    "A receita cresceu rapidamente: US$ 41 milhões em 2023, US$ 386 milhões em 2024 e US$ 4,585 bilhões em 2025, alta de mais de 1.000%. Nos seis primeiros meses de 2026, foram US$ 16,286 bilhões. A companhia informou que captou US$ 141,1 bilhões até o fim de junho e registrou prejuízo líquido de US$ 80 bilhões no semestre.",
+    "Diferentemente da OpenAI, que busca o consumidor final, a Anthropic tem as empresas como principal fonte de receita: mais de 14 mil clientes corporativos em 30 de setembro, dos quais 11,9 mil com receita de US$ 100 mil ou mais e cerca de 250 com US$ 10 milhões ou mais."
+  ]
+}

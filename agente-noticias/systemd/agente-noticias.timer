@@ -1,0 +1,10 @@
+[Unit]
+Description=Roda o agente de notícias às 7h e às 19h
+
+[Timer]
+OnCalendar=*-*-* 07,19:00:00
+RandomizedDelaySec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

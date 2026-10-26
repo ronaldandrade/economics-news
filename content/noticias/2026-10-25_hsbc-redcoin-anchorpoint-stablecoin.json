@@ -1,0 +1,35 @@
+{
+  "slug": "hsbc-redcoin-anchorpoint-stablecoin",
+  "date": "2026-10-25",
+  "featured": false,
+  "inRadar": false,
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Moedas Digitais Reguladas",
+  "category": "Tecnologia & Soberania",
+  "kicker": "STABLECOINS EM HONG KONG",
+  "title": "Anchorpoint, liderada pelo Standard Chartered, planeja stablecoin de varejo após o lançamento da HSBC RedCoin",
+  "subtitle": "O CEO diz que o próximo marco é levar dinheiro digital regulado aos pagamentos do dia a dia, com uma abordagem “prudente”.",
+  "author": "Tim Yuen Lingk",
+  "location": "Hong Kong",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "Hong Kong",
+    "Reino Unido",
+    "China"
+  ],
+  "image": "https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/10/25/f741966a-1432-4513-8961-a802c997b6d5_c2efe85b.jpg?itok=ZADcdIQK&v=1792910407",
+  "imageCaption": "Foto: South China Morning Post.",
+  "source": "South China Morning Post",
+  "sourceUrl": "https://www.scmp.com/business/cryptocurrency/article/3372060/standard-chartered-led-anchorpoint-plans-retail-stablecoin-hsbc-redcoin-launches",
+  "keyPoints": [
+    "A HSBC RedCoin foi lançada na sexta-feira.",
+    "A Anchorpoint, joint venture emissora de stablecoin liderada pelo Standard Chartered, quer lançar um produto de varejo em blockchain pública.",
+    "O CEO, Dominic Maffei, fala em uma “abordagem prudente”."
+  ],
+  "body": [
+    "Depois do lançamento da HSBC RedCoin na sexta-feira, a Anchorpoint, joint venture emissora de stablecoin liderada pelo Standard Chartered, disse que pretende lançar um produto de varejo em blockchain pública, embora adote uma “abordagem prudente”.",
+    "“Nosso próximo grande marco é ajudar a levar dinheiro digital regulado para pagamentos cotidianos e aplicações comerciais, conectando a infraestrutura tradicional de pagamentos a essas finanças digitais emergentes”, afirmou o CEO da Anchorpoint, Dominic Maffei.",
+    "Mais detalhes estão na matéria original do SCMP."
+  ]
+}

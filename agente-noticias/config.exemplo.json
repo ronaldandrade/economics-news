@@ -1,0 +1,28 @@
+{
+  "janela_horas": 24,
+  "max_itens_por_fonte": 30,
+  "min_fontes": 2,
+  "max_posts": 3,
+  "max_artigos_por_evento": 5,
+  "extrair_texto": true,
+  "dias_memoria": 5,
+  "modelos": {
+    "agrupar": "claude-haiku-5-5",
+    "resumir": "claude-haiku-5-5"
+  },
+  "precos_por_milhao": {
+    "claude-haiku-5-5": [0.10, 0.50],
+    "claude-sonnet-5-5": [2.00, 10.00]
+  },
+  "publicacao": {
+    "tipo": "arquivo",
+    "pasta": "saida/posts",
+    "repositorio": null,
+    "git": "nenhum",
+    "separador_slug": "-",
+    "frontmatter_extra": {
+      "author": "Ronald Andrade"
+    },
+    "aviso_ia": true
+  }
+}

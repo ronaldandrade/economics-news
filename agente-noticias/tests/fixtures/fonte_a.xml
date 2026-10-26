@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Fonte A (teste)</title>
+<item><title>Exampleland central bank raises rates to 4.5%</title><link>https://fonte-a.test/juros?utm_source=rss</link><pubDate>Mon, 26 Oct 2026 09:00:00 GMT</pubDate><description><![CDATA[<p>The central bank of Exampleland raised its key rate by 0.25 points to 4.5%, citing inflation of 3.8% in September.</p>]]></description></item>
+<item><title>Exampleland central bank raises rates to 4.5%</title><link>https://fonte-a.test/juros?utm_medium=x</link><pubDate>Mon, 26 Oct 2026 09:05:00 GMT</pubDate><description>duplicado</description></item>
+<item><title>Local bakery wins award</title><link>https://fonte-a.test/padaria</link><pubDate>Mon, 26 Oct 2026 08:00:00 GMT</pubDate><description>A bakery won a prize.</description></item>
+<item><title>Old story from last week</title><link>https://fonte-a.test/antiga</link><pubDate>Mon, 19 Oct 2026 08:00:00 GMT</pubDate><description>Old.</description></item>
+</channel></rss>

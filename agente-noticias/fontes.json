@@ -1,0 +1,15 @@
+{
+  "fontes": [
+    {"nome": "BBC Business", "idioma": "en", "url": "https://feeds.bbci.co.uk/news/business/rss.xml"},
+    {"nome": "The Guardian Economics", "idioma": "en", "url": "https://www.theguardian.com/business/economics/rss"},
+    {"nome": "CNBC Economy", "idioma": "en", "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html"},
+    {"nome": "NYT Economy", "idioma": "en", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml"},
+    {"nome": "DW Business", "idioma": "en", "url": "https://rss.dw.com/rdf/rss-en-bus"},
+    {"nome": "MarketWatch", "idioma": "en", "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories"},
+    {"nome": "Al Jazeera", "idioma": "en", "url": "https://www.aljazeera.com/xml/rss/all.xml"},
+    {"nome": "g1 Economia", "idioma": "pt", "url": "https://g1.globo.com/rss/g1/economia/"},
+    {"nome": "InfoMoney", "idioma": "pt", "url": "https://www.infomoney.com.br/feed/"},
+    {"nome": "BBC News Brasil", "idioma": "pt", "url": "https://feeds.bbci.co.uk/portuguese/rss.xml"},
+    {"nome": "CNN Brasil Economia", "idioma": "pt", "url": "https://www.cnnbrasil.com.br/economia/feed/"}
+  ]
+}

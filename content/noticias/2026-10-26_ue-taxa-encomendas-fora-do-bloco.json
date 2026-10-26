@@ -1,0 +1,36 @@
+{
+  "slug": "ue-taxa-encomendas-fora-do-bloco",
+  "date": "2026-10-26",
+  "featured": false,
+  "inRadar": true,
+  "corridorTag": "UNIÃO EUROPEIA • CHINA",
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Comércio Eletrônico em Revisão",
+  "category": "Comércio & Logística",
+  "kicker": "BARREIRA COMERCIAL",
+  "title": "União Europeia passa a cobrar taxa de €2 sobre encomendas de fora do bloco para frear a enxurrada vinda da China",
+  "subtitle": "A cobrança vale a partir de domingo, semanas antes da Black Friday, e se soma à tarifa de €3 já existente para pequenos volumes.",
+  "author": "Agence France-Presse (via SCMP)",
+  "location": "Bruxelas",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "União Europeia",
+    "China"
+  ],
+  "image": "https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/10/27/57f9f0f0-e3f1-4d33-9fce-5821e27c26f2_db86a312.jpg?itok=q9etGxdx&v=1793048958",
+  "imageCaption": "Foto: South China Morning Post.",
+  "source": "South China Morning Post / AFP",
+  "sourceUrl": "https://www.scmp.com/news/world/europe/article/3372219/new-levy-non-eu-parcels-kicks-sunday-bid-curb-influx-china",
+  "keyPoints": [
+    "Taxa de manuseio de €2 sobre pacotes de países fora dos 27 membros da UE.",
+    "A cobrança vem somada à tarifa de €3 sobre pequenos pacotes.",
+    "Vale para cada tipo de item de um pacote enviado direto ao consumidor, independentemente do valor."
+  ],
+  "body": [
+    "A União Europeia passa a aplicar, a partir de domingo, uma taxa de manuseio de €2 (cerca de US$ 2,25) sobre pacotes vindos de fora do bloco de 27 países, numa tentativa de conter o fluxo de remessas da China.",
+    "A nova cobrança chega poucas semanas antes da Black Friday, da Cyber Monday e da temporada de compras de fim de ano, e se soma à tarifa de €3 já cobrada sobre pequenos pacotes.",
+    "A taxa incide sobre cada tipo de item de um pacote enviado diretamente ao consumidor, independentemente do valor da mercadoria.",
+    "Para o texto completo, incluindo exemplos de cálculo e a reação do varejo, consulte a matéria original."
+  ]
+}

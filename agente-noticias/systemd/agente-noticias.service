@@ -1,0 +1,10 @@
+[Unit]
+Description=Agente de notícias de economia mundial
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/agente-noticias
+EnvironmentFile=%h/.config/agente-noticias/env
+ExecStart=%h/agente-noticias/.venv/bin/python -m agente_noticias executar
