@@ -1,0 +1,51 @@
+{
+  "slug": "governo-prorroga-por-30-dias-subvencao-ao-diesel-com",
+  "date": "2026-10-27",
+  "featured": false,
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Risco Energético Alto",
+  "category": "Energia & Recursos",
+  "kicker": "SUBVENÇÃO AO DIESEL",
+  "title": "Governo prorroga por 30 dias subvenção ao diesel com petróleo acima de US$ 100",
+  "subtitle": "O governo brasileiro prorrogou por mais 30 dias a subvenção ao diesel, de R$ 2,12 por litro, em meio à alta do petróleo. Segundo o Goldman Sachs, a Petrobras deve manter os preços do diesel até o fim do ano.",
+  "author": "MERIDIAN, com base em g1 Economia e InfoMoney",
+  "location": "Brasil",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "Brasil"
+  ],
+  "image": "https://s2-g1.glbimg.com/xOXHdHEPc9ozQqXk6aRE2a9pgFw=/1600x0/filters:format(jpeg)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2026/t/k/xzLny9QEunFjNDwk5ifg/informe-g1-2026-03-26t145731.329.png",
+  "imageCaption": "Foto: g1 Economia.",
+  "source": "g1 Economia / InfoMoney",
+  "sourceUrl": "https://g1.globo.com/economia/noticia/2026/10/27/governo-prorroga-subvencao-ao-diesel-por-mais-30-dias.ghtml",
+  "sources": [
+    {
+      "name": "g1 Economia",
+      "title": "Governo prorroga subvenção ao diesel por mais 30 dias, em meio à alta do petróleo",
+      "url": "https://g1.globo.com/economia/noticia/2026/10/27/governo-prorroga-subvencao-ao-diesel-por-mais-30-dias.ghtml"
+    },
+    {
+      "name": "InfoMoney",
+      "title": "Petrobras: Goldman vê manutenção de preços do diesel após governo manter subsídios",
+      "url": "https://www.infomoney.com.br/mercados/petrobras-goldman-ve-manutencao-de-precos-do-diesel-apos-governo-manter-subsidios/"
+    }
+  ],
+  "keyPoints": [
+    "Subvenção ao diesel prorrogada por 30 dias, mantendo R$ 2,12 por litro",
+    "Brent acima de US$ 100 por barril com conflitos no Oriente Médio",
+    "Mais de 25% do diesel consumido no Brasil é importado",
+    "Goldman Sachs prevê Petrobras sem alterar preço do diesel até o fim do ano"
+  ],
+  "body": [
+    "O governo brasileiro decidiu prorrogar por mais 30 dias a subvenção ao diesel. Sem a renovação, o benefício terminaria nesta semana. Segundo o governo, a portaria que oficializa a prorrogação seria publicada ainda nesta terça-feira no Diário Oficial da União.",
+    "A medida foi motivada pelas oscilações nos preços internacionais do petróleo e dos combustíveis. O petróleo do tipo Brent, referência global, seguia acima de US$ 100 por barril, pressionado pelos conflitos no Oriente Médio. Mais de 25% do diesel consumido no Brasil é importado.",
+    "Segundo o governo, a prorrogação não aumenta o valor do subsídio, que se mantém em R$ 2,12 por litro. A intenção é evitar que o benefício caia para R$ 1 com o fim da primeira medida provisória. O governo também adotou outras medidas para conter os preços, como o subsídio à gasolina, anunciado no início do mês.",
+    "Segundo o Goldman Sachs, a Petrobras deve manter inalterados os preços do diesel vendido a distribuidoras até o fim do ano. O banco citou a renovação do incentivo de R$ 2,12 por litro, somado a um subsídio adicional de R$ 1,40 por litro para importações, disponível até 6 de novembro. Os analistas estimam que o preço realizado do diesel pela Petrobras está em R$ 5,43 por litro, cerca de 25% abaixo da paridade internacional de importação, calculada em aproximadamente R$ 7,30 por litro.",
+    "Essas medidas foram anunciadas antes das eleições presidenciais, vencidas pelo presidente Luiz Inácio Lula da Silva (PT), segundo o g1. A InfoMoney, citando a Reuters, traz ainda o recuo da Bolsa após a sessão pós-eleições, de R$ 734 bilhões em um pregão.",
+    "Onde as fontes divergem: A fonte g1 diz que a portaria seria publicada nesta terça-feira; a InfoMoney não trata disso. A InfoMoney menciona um subsídio adicional de R$ 1,40 por litro para importações, que o g1 não cita. O g1 afirma que o benefício cairia para R$ 1 sem renovação; a InfoMoney não informa esse valor. Os textos não tratam dos mesmos aspectos e não há contradição direta nos números comuns."
+  ],
+  "generatedByAI": true,
+  "inRadar": true,
+  "corridorTag": "BRASIL"
+}

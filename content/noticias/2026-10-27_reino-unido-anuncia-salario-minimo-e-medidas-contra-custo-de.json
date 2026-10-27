@@ -1,0 +1,51 @@
+{
+  "slug": "reino-unido-anuncia-salario-minimo-e-medidas-contra-custo-de",
+  "date": "2026-10-27",
+  "featured": true,
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Pressão de Custo de Vida",
+  "category": "Macroeconomia",
+  "kicker": "ORÇAMENTO BRITÂNICO",
+  "title": "Reino Unido anuncia salário mínimo e medidas contra custo de vida no orçamento",
+  "subtitle": "Governo britânico prepara orçamento com aumento do salário mínimo, menor reajuste para jovens de 18 a 20 anos e corte de tarifas sobre alimentos. Chanceler John Healey promete alívio ao custo de vida.",
+  "author": "MERIDIAN, com base em The Guardian Economics e BBC Business",
+  "location": "Reino Unido",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Reino Unido"
+  ],
+  "image": "https://i.guim.co.uk/img/media/407ce8579097546b9602b56f57fa209ba8e7fea9/0_0_1666_1333/master/1666.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=fa42b01e0eddead989babc777bbe53e9",
+  "imageCaption": "Foto: The Guardian Economics.",
+  "source": "The Guardian Economics / BBC Business",
+  "sourceUrl": "https://www.theguardian.com/uk-news/2026/oct/27/budget-2026-six-charts-underpin-chancellor-decisions-john-healey",
+  "sources": [
+    {
+      "name": "The Guardian Economics",
+      "title": "Budget 2026: six charts that reveal the economic realities facing the chancellor",
+      "url": "https://www.theguardian.com/uk-news/2026/oct/27/budget-2026-six-charts-underpin-chancellor-decisions-john-healey"
+    },
+    {
+      "name": "BBC Business",
+      "title": "Minimum wage set to rise but 18-20 year-olds will not get bigger increase",
+      "url": "https://www.bbc.co.uk/news/articles/c6d93gq1xdgno"
+    }
+  ],
+  "keyPoints": [
+    "Salário mínimo sobe, mas faixa de 18 a 20 anos terá reajuste menor",
+    "Governo deve cortar tarifas de importação sobre 100 itens alimentícios",
+    "Combustível: congelamento do imposto e manutenção do desconto de 5p",
+    "Conservadores e setor de alimentos criticam o alcance das medidas"
+  ],
+  "body": [
+    "O Reino Unido apresenta seu orçamento com um aumento do salário mínimo, mas com reajuste menor para trabalhadores de 18 a 20 anos. Segundo a BBC, a alta para esse grupo deve ser inferior à dos últimos dois anos. O The Times, citado pela BBC, afirma que a faixa de 18 a 20 anos deve subir 3,9%, de £10,85 para cerca de £11,27 por hora, e que o piso para maiores de 21 anos, hoje em £12,71, subiria 3,9% para £13,20.",
+    "O chanceler John Healey chama as medidas de \"breathing space\", um alívio para famílias e empresas diante do custo de vida. Entre elas estão a remoção de tarifas de importação sobre 100 itens alimentícios, que, segundo o governo, poderia economizar até £21 por ano para cada família. Somadas às suspensões de tarifas feitas em junho, a economia seria de cerca de £500 milhões por ano, de acordo com o ministro de Negócios Jonathan Reynolds. A lista inclui feijão, alho, balas e fertilizantes, e o Tesouro deve publicá-la na quarta-feira.",
+    "Outras medidas anunciadas na terça-feira incluem tornar permanente a taxa de 55 centavos de libra por milha para quem dirige até 10 mil milhas a trabalho, a dois semanas de pagamento de licença-paternidade para pais autônomos e mais caixas de correio dos Correios. Os cuidadores de idosos poderão ganhar mais sem perder todo o benefício, mas a mudança só valerá a partir de 2030. Segundo a BBC, o governo também deve congelar novamente o imposto sobre combustíveis e manter o desconto de 5 centavos de libra.",
+    "Healey resumiu o alcance das medidas com uma frase: \"None of this is going to change the world\", ou seja, nada disso vai mudar o mundo. A Federação de Alimentos e Bebidas (FDF) disse que produzir comida no Reino Unido é mais caro que em vizinhos europeus, por causa dos altos custos de energia. Os conservadores afirmaram que as medidas já foram anuladas por juros, impostos e inflação mais altos.",
+    "Segundo o The Guardian, o orçamento é apresentado em um momento de choque econômico ligado à guerra no Oriente Médio. O chanceler precisa equilibrar medidas de alívio com crescimento e com as regras fiscais. A folga fiscal teria sido reduzida pela alta do custo da dívida, e a Resolution Foundation estima que ela tenha caído pela metade, para cerca de £12 bilhões. O Guardian também cita pressão para ampliar o apoio à energia, com mais de £1 bilhão previstos segundo fontes do jornal, e para acelerar o combate ao desemprego entre jovens.",
+    "Onde as fontes divergem: A BBC diz que o reajuste de 3,9% para a faixa de 18 a 20 anos é relatado pelo The Times, e não confirmado pelo governo. Os valores exatos do salário mínimo vêm do The Times, citado pela BBC. O Guardian trata a folga fiscal de forma diferente da BBC e não cita o aumento do salário mínimo, por ter sido escrito antes do anúncio. Os valores de folga fiscal e de apoio à energia vêm apenas do Guardian."
+  ],
+  "generatedByAI": true,
+  "inRadar": true,
+  "corridorTag": "REINO UNIDO"
+}
