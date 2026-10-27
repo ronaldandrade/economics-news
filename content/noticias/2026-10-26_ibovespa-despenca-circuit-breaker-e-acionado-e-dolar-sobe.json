@@ -1,0 +1,57 @@
+{
+  "slug": "ibovespa-despenca-circuit-breaker-e-acionado-e-dolar-sobe",
+  "date": "2026-10-26",
+  "featured": false,
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Alerta de Volatilidade Alta",
+  "category": "Macroeconomia",
+  "kicker": "CIRCUIT BREAKER NA B3",
+  "title": "Ibovespa despenca, circuit breaker é acionado e dólar sobe após reeleição de Lula",
+  "subtitle": "Após a reeleição de Lula, a Bolsa brasileira teve circuit breaker na abertura e fechou em queda de 13,88%, enquanto o dólar subiu para R$ 5,40. Analistas veem ajuste de posições.",
+  "author": "MERIDIAN, com base em g1 Economia, BBC News Brasil e Al Jazeera",
+  "location": "Brasil",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Brasil"
+  ],
+  "image": "https://s2-g1.glbimg.com/YkprGyeOpg1nqGSTIwAPWD-Z3kA=/5568x0/filters:format(jpeg)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2020/C/c/FwsIXETS6K61xm99LqYA/000-1pl7t0.jpg",
+  "imageCaption": "Foto: g1 Economia.",
+  "source": "g1 Economia / BBC News Brasil / Al Jazeera",
+  "sourceUrl": "https://g1.globo.com/economia/noticia/2026/10/26/circuit-breaker-e-acionado-pela-primeira-vez-desde-a-pandemia-de-covid-19-relembre-todas-as-vezes-em-que-a-bolsa-parou.ghtml",
+  "sources": [
+    {
+      "name": "g1 Economia",
+      "title": "Circuit breaker é acionado pela primeira vez desde a pandemia de Covid-19; relembre todas as vezes em que a Bolsa parou",
+      "url": "https://g1.globo.com/economia/noticia/2026/10/26/circuit-breaker-e-acionado-pela-primeira-vez-desde-a-pandemia-de-covid-19-relembre-todas-as-vezes-em-que-a-bolsa-parou.ghtml"
+    },
+    {
+      "name": "BBC News Brasil",
+      "title": "O que vai acontecer com dólar e juros após derrocada dos mercados financeiros com vitória de Lula",
+      "url": "https://www.bbc.com/portuguese/articles/cr20wjpvye31o"
+    },
+    {
+      "name": "Al Jazeera",
+      "title": "Brazil’s real sinks after Lula’s re-election victory",
+      "url": "https://www.aljazeera.com/economy/2026/10/26/brazils-real-sinks-after-lulas-re-election-victory?traffic_source=rss"
+    }
+  ],
+  "keyPoints": [
+    "Circuit breaker foi acionado na abertura e Ibovespa fechou em queda de 13,88%, a maior perda diária desde março de 2020 (BBC)",
+    "Dólar à vista chegou a R$ 5,60 e fechou em R$ 5,40, ante R$ 4,99 na sexta-feira (BBC)",
+    "Mercado havia apostado na vitória de Flávio Bolsonaro e agora revisa premissas de preço",
+    "Selic está em 13,75% ao ano; continuidade dos cortes depende do dólar (BBC)",
+    "Equipe de Lula mira superávit primário de cerca de 1,3% do PIB até 2030 (Al Jazeera)"
+  ],
+  "body": [
+    "A Bolsa de valores de São Paulo interrompeu os negócios por um circuit breaker logo na abertura da segunda-feira (26/10), após queda de mais de 10%. Segundo a BBC, o Ibovespa seguiu em baixa acentuada depois da retomada, sem novo acionamento do mecanismo, e fechou o dia com queda de 13,88%, a maior perda diária desde março de 2020. O g1 informa que o índice chegou a registrar queda de 16,48% durante o pregão, e que o acionamento foi o primeiro desde o início da pandemia de Covid-19.",
+    "O movimento começou após a vitória de Luiz Inácio Lula da Silva (PT) no segundo turno, disputado no domingo (25/10) contra Flávio Bolsonaro (PL). Segundo a BBC, o dólar à vista chegou a R$ 5,60 pela manhã e terminou o dia cotado a R$ 5,40, depois de fechar na sexta-feira (23/10) em R$ 4,99. Os juros futuros também subiram, com alta de quase 3 pontos percentuais nos contratos para 2031. A Al Jazeera informa que o real caiu cerca de 12% no mercado à vista.",
+    "Analistas ouvidos pela BBC dizem que o mercado havia montado posições apostando na vitória de Flávio Bolsonaro e em maior rigor fiscal. Com o resultado oposto, investidores estão revisando suas premissas de preço. Para Jorge Ferreira dos Santos Filho, da ESPM, a queda foi exagerada e empresas exportadoras podem se recuperar nos próximos dias. Ele também afirma que o dólar deve seguir acima de R$ 5.",
+    "A Selic está em 13,75% ao ano, depois de começar 2026 em 15%. Segundo a BBC, o mercado esperava novos cortes nas reuniões do Copom de novembro e dezembro, mas a continuidade da queda dependerá do comportamento do dólar. Para Luciano Sobral, economista-chefe da NEO Investimentos, o fluxo de investidores estrangeiros e a resposta do governo eleito serão decisivos.",
+    "Segundo a BBC, Cassio Viana de Jesus, da Pilar Capital, afirma que a trajetória das contas públicas é o ponto central. A Al Jazeera registra que a equipe de Lula busca um superávit primário de cerca de 1,3% do PIB até 2030, e que a dívida pública já passa de 82% do PIB. A mesma fonte diz que a escolha do ministro da Fazenda será observada de perto pelo mercado.",
+    "Onde as fontes divergem: A queda do Ibovespa varia conforme a fonte: o g1 cita queda de 16,48% durante o pregão, enquanto a BBC informa fechamento em queda de 13,88%. A Al Jazeera fala em queda de 10% no índice à vista e de cerca de 15% nos contratos futuros, e em queda de 12% do real à vista, sem indicar o fechamento. A BBC diz que o dólar fechou em R$ 5,40 e a Al Jazeera não informa cotação final. Os textos também divergem sobre o horário do acionamento: a BBC diz que ocorreu logo na abertura, e o g1 não detalha esse ponto."
+  ],
+  "generatedByAI": true,
+  "inRadar": true,
+  "corridorTag": "BRASIL"
+}
