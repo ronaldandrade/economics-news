@@ -32,10 +32,11 @@ RESUMO_BOM = {
     "pontos": ["Juros sobem para 4,5%", "Inflação de 3,8% em setembro", "Mercado esperava 4,25%"],
     "divergencias": "",
     "tags": ["juros", "bancos centrais"],
-    "alcance": "regional",
+    "alcance": "internacional",
+    "consequencia": "relevante",
+    "base_consequencia": "",
     "editoria": "Macroeconomia",
     "chapeu": "POLÍTICA MONETÁRIA",
-    "gravidade": "Aperto Monetário",
     "local": "Exemplândia",
     "paises": ["Exemplândia", "Vizinhândia"],
 }
@@ -56,9 +57,9 @@ class ClienteFalso:
             ids_petroleo = [int(i) for i in re.findall(r"\[(\d+)\][^\n]*Petróleo", texto)]
             entrada = {"grupos": [
                 {"evento": "Banco central da Exemplândia sobe juros para 4,5%", "itens": ids_juros + [999], "categoria": "politica_monetaria", "relevancia": 4, "repete_publicado": "Exemplândia sobe juros" in texto.split("Manchetes:")[0],
-                 "alcance_economico": "entre_paises", "canal_economico": "câmbio e juros dos vizinhos"},
+                 "alcance_economico": "internacional", "canal_economico": "câmbio e juros dos vizinhos"},
                 {"evento": "Petróleo cai 2%", "itens": ids_petroleo + ids_juros[:1], "categoria": "commodities_e_energia", "relevancia": 3, "repete_publicado": False,
-                 "alcance_economico": "mundial", "canal_economico": "preço do petróleo"},
+                 "alcance_economico": "global", "canal_economico": "preço do petróleo"},
             ]}
         else:
             entrada = self.resumos.pop(0)
@@ -99,8 +100,8 @@ def test_normalizar_link_remove_rastreio():
 def test_grupos_descartam_ids_inventados_e_exigem_duas_fontes():
     itens, _ = coletar(FONTES, 24, agora=AGORA, log=lambda *_: None)
     brutos = [
-        {"evento": "juros", "itens": [0, 2, 3, 999, 0], "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "mundial"},
-        {"evento": "petróleo", "itens": [3], "categoria": "x", "relevancia": 3, "repete_publicado": False, "alcance_economico": "mundial"},
+        {"evento": "juros", "itens": [0, 2, 3, 999, 0], "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "global"},
+        {"evento": "petróleo", "itens": [3], "categoria": "x", "relevancia": 3, "repete_publicado": False, "alcance_economico": "global"},
     ]
     grupos = validar_grupos(brutos, itens)
     assert [len(g["itens"]) for g in grupos] == [3]
@@ -223,7 +224,7 @@ def test_mesmo_veiculo_conta_como_uma_fonte():
     fontes = [dict(FONTES[0], grupo="Rede X"), dict(FONTES[1], grupo="Rede X"), FONTES[2]]
     itens, _ = coletar(fontes, 24, agora=AGORA, log=lambda *_: None)
     juros_a_b = [i.id for i in itens if "juros" in i.link]
-    grupos = validar_grupos([{"evento": "juros", "itens": juros_a_b, "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "mundial"}], itens)
+    grupos = validar_grupos([{"evento": "juros", "itens": juros_a_b, "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "global"}], itens)
     assert grupos[0]["fontes"] == ["Fonte A", "Fonte B"] and grupos[0]["veiculos"] == ["Rede X"]
     escolhidos, descartados = ranquear(grupos, 2, 3, set())
     assert escolhidos == [] and descartados == [("juros", "1 veículo(s), mínimo 2")]
@@ -240,8 +241,9 @@ def test_noticia_no_formato_do_site():
                 divergencias="A Fonte C fala em 4,25%.",
                 fontes=[{"nome": "Fonte B", "titulo": "Juros", "link": "https://b.test/1"}, {"nome": "Fonte C", "titulo": "Hike", "link": "https://c.test/2"}])
     n = noticia_para_site(post, "2026-10-26", "banco-central-sobe-juros")
-    assert n["featured"] is True and n["impactScope"] == "regional" and n["impactLabel"] == "Impacto nos Países Vizinhos"
-    assert n["inRadar"] is True and n["corridorTag"] == "EXEMPLÂNDIA • VIZINHÂNDIA"
+    assert n["featured"] is True and n["impactScope"] == "internacional" and n["consequence"] == "relevante"
+    assert "impactLabel" not in n and "severity" not in n and "consequenceBasis" not in n
+    assert n["corridorTag"] == "EXEMPLÂNDIA • VIZINHÂNDIA"
     assert n["category"] == "Macroeconomia" and n["kicker"] == "POLÍTICA MONETÁRIA"
     assert len(n["body"]) == 4 and n["body"][-1].startswith("Onde as fontes divergem")
     assert n["author"] == "MERIDIAN, com base em Fonte B e Fonte C"
@@ -362,3 +364,18 @@ def test_filtro_de_alcance_descarta_politica_celebridade_e_economia_nacional():
     # o modelo esqueceu de classificar: não publica
     sem_campo = validar_grupos([{"evento": "x", "itens": juros, "categoria": "x", "relevancia": 5, "repete_publicado": False}], itens)
     assert ranquear(sem_campo, 1, 3, set())[1] == [("x", "alcance nao_informado")]
+
+
+def test_consequencia_critica_exige_evidencia_com_numeros_das_fontes():
+    material = [{"titulo": "Rates", "texto": "The central bank raised rates to 4.5%, the highest since 2008."}]
+    base = dict(RESUMO_BOM, corpo="Juros sobem para 4,5%.", descricao="O banco central subiu os juros para 4,5%, a maior taxa desde 2008, segundo a fonte.",
+                titulo="Juros sobem para 4,5%", pontos=["Juros a 4,5%"], divergencias="")
+    sem_base = dict(base, consequencia="critica", base_consequencia="")
+    assert any("sem base_consequencia" in p for p in checar(sem_base, material))
+    base_inventada = dict(base, consequencia="critica", base_consequencia="Maior alta em 30 anos.")
+    assert any("30" in p for p in checar(base_inventada, material))
+    ok = dict(base, consequencia="critica", base_consequencia="Juros a 4,5%, o maior nível desde 2008.")
+    assert checar(ok, material) == []
+    n = noticia_para_site(dict(ok, fontes=[{"nome": "A", "titulo": "t", "link": "https://a.test"}]), "2026-10-27", "juros")
+    assert n["consequence"] == "critica" and n["consequenceBasis"].startswith("Juros a 4,5%")
+    assert n["impactScope"] == "internacional" and "corridorTag" in n

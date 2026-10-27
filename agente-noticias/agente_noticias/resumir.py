@@ -1,6 +1,9 @@
 from .verificar import checar
 
 # Mesmas editorias de src/lib/tipos.ts do site
+# Mesmos valores de ESCOPOS e CONSEQUENCIAS em src/lib/tipos.ts
+ALCANCES = ["global", "internacional", "nacional"]
+CONSEQUENCIAS = ["acompanhamento", "relevante", "critica"]
 EDITORIAS = ["Macroeconomia", "Geopolítica & Fronteiras", "Energia & Recursos", "Comércio & Logística", "Tecnologia & Soberania"]
 
 SISTEMA = """Você é jornalista de economia e escreve em português do Brasil para um público curioso, mas não especialista.
@@ -24,9 +27,11 @@ Estilo:
 - "corpo" em Markdown simples, de 3 a 5 parágrafos, sem títulos.
 
 Classificação para o site:
-- "alcance": "global" quando o fato mexe com mercados, cadeias ou economias de vários continentes; "regional" quando o efeito direto é num país e nos vizinhos ou num bloco.
+Alcance e consequência são dois campos independentes. Classifique pelo efeito que as fontes descrevem, não pelos países citados nem pela sede das empresas: uma multinacional ou uma lista de países não torna o fato global.
+- "alcance": "global" se as fontes mostram efeito sobre mercados, preços ou cadeias em vários continentes; "internacional" se mostram efeito direto sobre a economia de dois ou mais países ou de um bloco (vizinhos ou não); "nacional" se o efeito descrito fica concentrado num país. Na dúvida, escolha o mais restrito.
+- "consequencia": "acompanhamento" para proposta, anúncio, plano ou efeito ainda incerto; "relevante" quando as fontes medem um efeito concreto sobre preços, fluxos ou regras de um mercado; "critica" só para choque amplo já em curso, com números nas fontes que mostram disrupção séria. Na dúvida, escolha a menor.
+- "base_consequencia": a evidência, em uma frase com os números das fontes. Obrigatória para "critica"; para as outras, pode ficar vazia.
 - "chapeu": 2 a 4 palavras que nomeiam o assunto (ex.: "CHOQUE ENERGÉTICO", "BARREIRA COMERCIAL").
-- "gravidade": rótulo curto do tipo de risco (ex.: "Risco Energético Alto", "Tensão Comercial").
 - "local": cidade ou país de onde o fato foi noticiado, como aparece nas fontes.
 - "paises": países ou blocos afetados citados nas fontes, em português."""
 
@@ -42,14 +47,15 @@ FERRAMENTA = {
             "pontos": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 5},
             "divergencias": {"type": "string", "description": "Onde as fontes discordam. Vazio se concordam."},
             "tags": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 5},
-            "alcance": {"type": "string", "enum": ["global", "regional"]},
+            "alcance": {"type": "string", "enum": ALCANCES},
+            "consequencia": {"type": "string", "enum": CONSEQUENCIAS},
+            "base_consequencia": {"type": "string", "description": "Evidência com números das fontes; obrigatória se a consequência for critica."},
             "editoria": {"type": "string", "enum": EDITORIAS},
             "chapeu": {"type": "string", "description": "Até 40 caracteres, em maiúsculas."},
-            "gravidade": {"type": "string", "description": "Até 40 caracteres."},
             "local": {"type": "string"},
             "paises": {"type": "array", "items": {"type": "string"}, "minItems": 1, "maxItems": 6},
         },
-        "required": ["titulo", "descricao", "corpo", "pontos", "divergencias", "tags", "alcance", "editoria", "chapeu", "gravidade", "local", "paises"],
+        "required": ["titulo", "descricao", "corpo", "pontos", "divergencias", "tags", "alcance", "consequencia", "base_consequencia", "editoria", "chapeu", "local", "paises"],
     },
 }
 

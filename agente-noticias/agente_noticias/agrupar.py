@@ -4,9 +4,9 @@ CATEGORIAS = [
     "commodities_e_energia", "mercados", "divida_e_fiscal", "empresas_globais", "organismos_e_acordos", "crise",
 ]
 
-ALCANCES = ["mundial", "entre_paises", "nacional", "nao_economico"]
+ALCANCES = ["global", "internacional", "nacional", "nao_economico"]
 # Só estes viram post; o resto é descartado em código, mesmo que o modelo esqueça a regra
-ALCANCES_PUBLICAVEIS = {"mundial", "entre_paises"}
+ALCANCES_PUBLICAVEIS = {"global", "internacional"}
 
 SISTEMA = """Você é editor de economia internacional. Recebe uma lista numerada de manchetes de vários sites de notícias, em português e em inglês.
 
@@ -23,8 +23,8 @@ Não inclua, mesmo que vários sites noticiem:
 - Resultado de uma empresa que não mexe com mercados de vários países; finanças pessoais, dicas de investimento, promoções, colunas de opinião e conteúdo patrocinado.
 
 Para cada grupo, classifique "alcance_economico":
-- "mundial": afeta mercados, preços ou cadeias de vários continentes.
-- "entre_paises": afeta diretamente a economia de outros países, de vizinhos ou de um bloco (comércio, câmbio, investimento, energia que cruza a fronteira).
+- "global": afeta mercados, preços ou cadeias de vários continentes.
+- "internacional": afeta diretamente a economia de outros países, de vizinhos ou de um bloco (comércio, câmbio, investimento, energia que cruza a fronteira).
 - "nacional": efeito econômico só dentro de um país.
 - "nao_economico": política, esportes, celebridades, cultura ou outro assunto que não é economia.
 Na dúvida entre duas opções, escolha a mais restrita. Em "canal_economico", diga em uma frase por onde o fato atinge outros países (ex.: "preço do gás importado pela Europa"); para "nacional" e "nao_economico", escreva "nenhum".

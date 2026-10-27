@@ -155,9 +155,6 @@ class PublicadorArquivo:
         return {"modo": "pr", "url": criado.stdout.strip()}
 
 
-ROTULO_IMPACTO = {"global": "Impacto Mundial Crítico", "regional": "Impacto nos Países Vizinhos"}
-
-
 def juntar_nomes(nomes):
     return nomes[0] if len(nomes) == 1 else ", ".join(nomes[:-1]) + " e " + nomes[-1]
 
@@ -168,7 +165,7 @@ def noticia_para_site(post, data, slug):
     if post.get("divergencias", "").strip():
         paragrafos.append("Onde as fontes divergem: " + post["divergencias"].strip())
     paises = post.get("paises") or []
-    alcance = post.get("alcance", "global")
+    alcance = post.get("alcance", "nacional")
     fontes = post["fontes"]
     nomes = [f["nome"] for f in fontes]
     noticia = {
@@ -176,8 +173,7 @@ def noticia_para_site(post, data, slug):
         "date": data,
         "featured": bool(post.get("destaque")),
         "impactScope": alcance,
-        "impactLabel": ROTULO_IMPACTO[alcance],
-        "severity": post.get("gravidade", ""),
+        "consequence": post.get("consequencia", "acompanhamento"),
         "category": post["editoria"],
         "kicker": post.get("chapeu", "").upper(),
         "title": post["titulo"],
@@ -195,8 +191,9 @@ def noticia_para_site(post, data, slug):
         "body": paragrafos,
         "generatedByAI": True,
     }
-    if alcance == "regional":
-        noticia["inRadar"] = True
+    if post.get("base_consequencia", "").strip():
+        noticia["consequenceBasis"] = post["base_consequencia"].strip()
+    if alcance == "internacional":
         noticia["corridorTag"] = " • ".join(p.upper() for p in paises[:3])
     return noticia
 

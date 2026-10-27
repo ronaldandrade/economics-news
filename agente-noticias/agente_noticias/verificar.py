@@ -70,7 +70,7 @@ def checar(post, material):
     textos = [m["titulo"] + " " + m["texto"] for m in material]
     corpo = " ".join([
         post.get("titulo", ""), post.get("descricao", ""), post.get("corpo", ""), " ".join(post.get("pontos", [])),
-        post.get("divergencias", ""), post.get("chapeu", ""), post.get("gravidade", ""),
+        post.get("divergencias", ""), post.get("chapeu", ""), post.get("base_consequencia", ""),
     ])
     problemas = []
     faltando = numeros_sem_fonte(corpo, textos)
@@ -83,6 +83,6 @@ def checar(post, material):
         problemas.append(f"descrição com {len(post.get('descricao', ''))} caracteres (entre 60 e 260)")
     if "chapeu" in post and len(post["chapeu"]) > 40:
         problemas.append(f"chapéu com {len(post['chapeu'])} caracteres (máximo 40)")
-    if "gravidade" in post and len(post["gravidade"]) > 40:
-        problemas.append(f"gravidade com {len(post['gravidade'])} caracteres (máximo 40)")
+    if post.get("consequencia") == "critica" and not post.get("base_consequencia", "").strip():
+        problemas.append("consequência crítica sem base_consequencia: diga a evidência com os números das fontes ou use relevante")
     return problemas
