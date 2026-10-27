@@ -83,14 +83,33 @@ class PublicadorArquivo:
             if git(self.repo, "status", "--porcelain", "--untracked-files=no"):
                 raise RuntimeError(f"o repositório {self.repo} tem alterações não commitadas; resolva antes de publicar")
             git(self.repo, "fetch", self.remoto, self.branch_base)
-            branch = f"{self.prefixo_branch}/{data}"
-            existentes = git(self.repo, "branch", "--list", branch)
             self.branch_original = git(self.repo, "rev-parse", "--abbrev-ref", "HEAD")
-            if existentes:
-                git(self.repo, "switch", branch)
-            else:
-                git(self.repo, "switch", "-c", branch, f"{self.remoto}/{self.branch_base}")
+            base = f"{self.remoto}/{self.branch_base}"
+            # Uma branch por PR: se a do dia já foi mergeada, a segunda rodada usa noticias/AAAA-MM-DD-2
+            n = 1
+            while True:
+                branch = f"{self.prefixo_branch}/{data}" if n == 1 else f"{self.prefixo_branch}/{data}-{n}"
+                local = bool(git(self.repo, "branch", "--list", branch))
+                remota = bool(git(self.repo, "ls-remote", "--heads", self.remoto, branch))
+                if not local and not remota:
+                    git(self.repo, "switch", "-c", branch, base)
+                    break
+                if remota:
+                    git(self.repo, "fetch", self.remoto, branch)
+                ponta = branch if local else f"{self.remoto}/{branch}"
+                mergeada = subprocess.run(["git", "-C", str(self.repo), "merge-base", "--is-ancestor", ponta, base]).returncode == 0
+                if not mergeada and self._pr_aberto(branch) is not None:
+                    # ainda em revisão: acrescenta as notícias novas ao mesmo PR
+                    git(self.repo, "switch", branch) if local else git(self.repo, "switch", "-c", branch, ponta)
+                    break
+                n += 1
             self.branch = branch
+
+    def _pr_aberto(self, branch):
+        r = subprocess.run(["gh", "pr", "list", "--head", branch, "--state", "open", "--json", "url", "-q", ".[0].url"],
+                           cwd=self.repo, capture_output=True, text=True)
+        url = r.stdout.strip()
+        return url if r.returncode == 0 and url else None
 
     def publicar(self, post, data):
         self.pasta.mkdir(parents=True, exist_ok=True)
@@ -122,9 +141,9 @@ class PublicadorArquivo:
         git(self.repo, "push", "-u", self.remoto, self.branch)
         # devolve o repositório à branch em que estava, para não deixar o usuário na branch do agente
         self._voltar_branch()
-        existente = subprocess.run(["gh", "pr", "view", self.branch, "--json", "url", "-q", ".url"], cwd=self.repo, capture_output=True, text=True)
-        if existente.returncode == 0:
-            return {"modo": "pr", "url": existente.stdout.strip()}
+        existente = self._pr_aberto(self.branch)
+        if existente:
+            return {"modo": "pr", "url": existente}
         criado = subprocess.run(
             ["gh", "pr", "create", "--base", self.branch_base, "--head", self.branch,
              "--title", f"Notícias de economia: {data}",

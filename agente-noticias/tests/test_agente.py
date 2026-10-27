@@ -153,7 +153,14 @@ def preparar_repo_com_remoto(tmp_path, remoto, repo):
     subprocess.run(["git", "-C", str(repo), "push", "-q", "origin", "main"], check=True)
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "gh").write_text('#!/bin/bash\nif [ "$1 $2" = "pr view" ]; then exit 1; fi\necho https://github.com/x/y/pull/1\n')
+    # gh falso que lembra o PR aberto (arquivo pr_aberto) e numera os PRs criados
+    (bin_dir / "gh").write_text(
+        '#!/bin/bash\nd="$(dirname "$0")"\n'
+        'case "$1 $2" in\n'
+        '  "pr list") [ -f "$d/pr_aberto" ] && cat "$d/pr_aberto"; exit 0;;\n'
+        '  "pr create") n=$(( $(cat "$d/n" 2>/dev/null || echo 0) + 1 )); echo $n > "$d/n";'
+        ' echo https://github.com/x/y/pull/$n | tee "$d/pr_aberto";;\n'
+        'esac\n')
     (bin_dir / "gh").chmod(0o755)
     os.environ["PATH"] = f"{bin_dir}:{os.environ['PATH']}"
 
@@ -294,3 +301,44 @@ def test_baixar_descompacta_gzip(tmp_path, monkeypatch):
 
     monkeypatch.setattr(modulo.urllib.request, "urlopen", lambda *a, **k: Resposta(gzip.compress(b"<rss/>")))
     assert modulo.baixar("https://feed.test/rss") == b"<rss/>"
+
+
+def test_segunda_rodada_no_dia_apos_merge_abre_pr_novo(tmp_path):
+    remoto, repo = tmp_path / "remoto.git", tmp_path / "site"
+    preparar_repo_com_remoto(tmp_path, remoto, repo)
+    cfg = cfg_base()
+    cfg["publicacao"] = {"tipo": "site_json", "repositorio": str(repo), "git": "pr"}
+    llm, _ = cliente([RESUMO_BOM])
+    rel = executar(cfg, FONTES, llm, tmp_path / "agente1", log=lambda *_: None, agora=AGORA)
+    branch = "noticias/" + rel["inicio"][:10]
+    assert rel["git"]["url"].endswith("/pull/1")
+
+    # você faz o merge do PR 1 no GitHub
+    subprocess.run(["git", "-C", str(repo), "fetch", "-q", "origin"], check=True)
+    subprocess.run(["git", "-C", str(repo), "merge", "-q", "--no-ff", "-m", "Merge PR 1", f"origin/{branch}"], check=True)
+    subprocess.run(["git", "-C", str(repo), "push", "-q", "origin", "main"], check=True)
+    (tmp_path / "bin" / "pr_aberto").unlink()
+
+    # segunda rodada no mesmo dia: branch nova e PR novo, sem mexer na branch mergeada
+    llm2, _ = cliente([RESUMO_BOM])
+    rel2 = executar(cfg, FONTES, llm2, tmp_path / "agente2", log=lambda *_: None, agora=AGORA)
+    assert rel2["git"]["url"].endswith("/pull/2")
+    novos = subprocess.run(["git", "-C", str(remoto), "diff", "--name-only", "main", f"{branch}-2"], capture_output=True, text=True).stdout.split()
+    assert len(novos) == 1 and novos[0].endswith("-2.json")
+    ponta_antiga = subprocess.run(["git", "-C", str(remoto), "rev-parse", branch], capture_output=True, text=True).stdout
+    assert ponta_antiga == subprocess.run(["git", "-C", str(remoto), "rev-parse", "main^2"], capture_output=True, text=True).stdout
+
+
+def test_rodada_com_pr_aberto_acrescenta_ao_mesmo_pr(tmp_path):
+    remoto, repo = tmp_path / "remoto.git", tmp_path / "site"
+    preparar_repo_com_remoto(tmp_path, remoto, repo)
+    cfg = cfg_base()
+    cfg["publicacao"] = {"tipo": "site_json", "repositorio": str(repo), "git": "pr"}
+    llm, _ = cliente([RESUMO_BOM])
+    rel = executar(cfg, FONTES, llm, tmp_path / "agente1", log=lambda *_: None, agora=AGORA)
+    llm2, _ = cliente([RESUMO_BOM])
+    rel2 = executar(cfg, FONTES, llm2, tmp_path / "agente2", log=lambda *_: None, agora=AGORA)
+    assert rel["git"]["url"] == rel2["git"]["url"]
+    branch = "noticias/" + rel["inicio"][:10]
+    commits = subprocess.run(["git", "-C", str(remoto), "rev-list", "--count", f"main..{branch}"], capture_output=True, text=True).stdout.strip()
+    assert commits == "2"
