@@ -32,7 +32,11 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
     log("== agrupando acontecimentos repetidos entre sites")
     grupos = agrupar(llm, cfg["modelos"]["agrupar"], itens, estado.eventos())
     escolhidos, descartados = ranquear(grupos, cfg.get("min_fontes", 2), cfg.get("max_posts", 3), estado.links())
-    relatorio["grupos"] = [{"evento": g["evento"], "fontes": g["fontes"], "relevancia": g["relevancia"]} for g in grupos]
+    relatorio["grupos"] = [
+        {"evento": g["evento"], "fontes": g["fontes"], "relevancia": g["relevancia"],
+         "alcance": g["alcance_economico"], "canal": g["canal_economico"]}
+        for g in grupos
+    ]
     relatorio["descartados"] = descartados
     for g in escolhidos:
         log(f"   ✓ {len(g['fontes'])} fontes · {g['evento']}")

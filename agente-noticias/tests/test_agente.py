@@ -55,8 +55,10 @@ class ClienteFalso:
             ids_juros = [int(i) for i in re.findall(r"\[(\d+)\][^\n]*(?:Exampleland|Exemplândia)", texto)]
             ids_petroleo = [int(i) for i in re.findall(r"\[(\d+)\][^\n]*Petróleo", texto)]
             entrada = {"grupos": [
-                {"evento": "Banco central da Exemplândia sobe juros para 4,5%", "itens": ids_juros + [999], "categoria": "politica_monetaria", "relevancia": 4, "repete_publicado": "Exemplândia sobe juros" in texto.split("Manchetes:")[0]},
-                {"evento": "Petróleo cai 2%", "itens": ids_petroleo + ids_juros[:1], "categoria": "commodities_e_energia", "relevancia": 3, "repete_publicado": False},
+                {"evento": "Banco central da Exemplândia sobe juros para 4,5%", "itens": ids_juros + [999], "categoria": "politica_monetaria", "relevancia": 4, "repete_publicado": "Exemplândia sobe juros" in texto.split("Manchetes:")[0],
+                 "alcance_economico": "entre_paises", "canal_economico": "câmbio e juros dos vizinhos"},
+                {"evento": "Petróleo cai 2%", "itens": ids_petroleo + ids_juros[:1], "categoria": "commodities_e_energia", "relevancia": 3, "repete_publicado": False,
+                 "alcance_economico": "mundial", "canal_economico": "preço do petróleo"},
             ]}
         else:
             entrada = self.resumos.pop(0)
@@ -97,8 +99,8 @@ def test_normalizar_link_remove_rastreio():
 def test_grupos_descartam_ids_inventados_e_exigem_duas_fontes():
     itens, _ = coletar(FONTES, 24, agora=AGORA, log=lambda *_: None)
     brutos = [
-        {"evento": "juros", "itens": [0, 2, 3, 999, 0], "categoria": "x", "relevancia": 4, "repete_publicado": False},
-        {"evento": "petróleo", "itens": [3], "categoria": "x", "relevancia": 3, "repete_publicado": False},
+        {"evento": "juros", "itens": [0, 2, 3, 999, 0], "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "mundial"},
+        {"evento": "petróleo", "itens": [3], "categoria": "x", "relevancia": 3, "repete_publicado": False, "alcance_economico": "mundial"},
     ]
     grupos = validar_grupos(brutos, itens)
     assert [len(g["itens"]) for g in grupos] == [3]
@@ -221,7 +223,7 @@ def test_mesmo_veiculo_conta_como_uma_fonte():
     fontes = [dict(FONTES[0], grupo="Rede X"), dict(FONTES[1], grupo="Rede X"), FONTES[2]]
     itens, _ = coletar(fontes, 24, agora=AGORA, log=lambda *_: None)
     juros_a_b = [i.id for i in itens if "juros" in i.link]
-    grupos = validar_grupos([{"evento": "juros", "itens": juros_a_b, "categoria": "x", "relevancia": 4, "repete_publicado": False}], itens)
+    grupos = validar_grupos([{"evento": "juros", "itens": juros_a_b, "categoria": "x", "relevancia": 4, "repete_publicado": False, "alcance_economico": "mundial"}], itens)
     assert grupos[0]["fontes"] == ["Fonte A", "Fonte B"] and grupos[0]["veiculos"] == ["Rede X"]
     escolhidos, descartados = ranquear(grupos, 2, 3, set())
     assert escolhidos == [] and descartados == [("juros", "1 veículo(s), mínimo 2")]
@@ -342,3 +344,21 @@ def test_rodada_com_pr_aberto_acrescenta_ao_mesmo_pr(tmp_path):
     branch = "noticias/" + rel["inicio"][:10]
     commits = subprocess.run(["git", "-C", str(remoto), "rev-list", "--count", f"main..{branch}"], capture_output=True, text=True).stdout.strip()
     assert commits == "2"
+
+
+def test_filtro_de_alcance_descarta_politica_celebridade_e_economia_nacional():
+    itens, _ = coletar(FONTES, 24, agora=AGORA, log=lambda *_: None)
+    juros = [i.id for i in itens if "juros" in i.link or "hike" in i.link]
+    base = {"categoria": "x", "relevancia": 5, "repete_publicado": False, "canal_economico": "nenhum"}
+    brutos = [
+        dict(base, evento="Eleição presidencial", itens=juros[:1] + juros[2:], alcance_economico="nao_economico"),
+        dict(base, evento="Subsídio ao diesel", itens=[juros[1]], alcance_economico="nacional"),
+    ]
+    grupos = validar_grupos(brutos, itens)
+    escolhidos, descartados = ranquear(grupos, 1, 3, set())
+    assert escolhidos == []
+    assert ("Eleição presidencial", "alcance nao_economico") in descartados
+    assert ("Subsídio ao diesel", "alcance nacional") in descartados
+    # o modelo esqueceu de classificar: não publica
+    sem_campo = validar_grupos([{"evento": "x", "itens": juros, "categoria": "x", "relevancia": 5, "repete_publicado": False}], itens)
+    assert ranquear(sem_campo, 1, 3, set())[1] == [("x", "alcance nao_informado")]
