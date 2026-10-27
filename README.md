@@ -78,5 +78,4 @@ Campos de cada notícia:
 - O agente ainda não rodou com a API real: os testes usam um cliente de IA falso. Faça a primeira execução com `--seco`.
 - As imagens dependem dos sites das fontes. Se uma fonte remover a imagem ou bloquear o uso externo, a matéria passa a mostrar o SVG de reserva.
 - A busca procura só nas 60 matérias da capa.
-- `instalar_agente_noticias.sh` é uma cópia empacotada da versão anterior do agente (grava MDX e instala em `~/agente-noticias`); não reflete o `agente-noticias/` atual.
 - Sem testes automatizados para o site; a verificação é o `npm run build` (que valida o conteúdo) e o `npm run lint`.
