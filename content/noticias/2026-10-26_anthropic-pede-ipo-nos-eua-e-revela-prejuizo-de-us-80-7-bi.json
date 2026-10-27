@@ -1,0 +1,66 @@
+{
+  "slug": "anthropic-pede-ipo-nos-eua-e-revela-prejuizo-de-us-80-7-bi",
+  "date": "2026-10-26",
+  "featured": true,
+  "impactScope": "global",
+  "impactLabel": "Impacto Mundial Crítico",
+  "severity": "Risco Financeiro Elevado",
+  "category": "Tecnologia & Soberania",
+  "kicker": "ABERTURA DE CAPITAL",
+  "title": "Anthropic pede IPO nos EUA e revela prejuízo de US$ 80,7 bi no primeiro semestre",
+  "subtitle": "A Anthropic, criadora do Claude, apresentou pedido de abertura de capital nos EUA, com plano de negociar na Nasdaq sob o código ANT. O primeiro semestre teve receita de US$ 16,3 bi e prejuízo de US$ 80,7 bi.",
+  "author": "MERIDIAN, com base em The Guardian Economics, g1 Economia, InfoMoney, NYT Economy e BBC Business",
+  "location": "Estados Unidos",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Estados Unidos",
+    "Brasil"
+  ],
+  "image": "https://i.guim.co.uk/img/media/afbb0cd83bbf049e769d061a626b00d5b467ae51/0_0_4169_3335/master/4169.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctbGl2ZS5wbmc&enable=upscale&s=d43ca2a7e2b107d297cad743cb9956f3",
+  "imageCaption": "Foto: The Guardian Economics.",
+  "source": "The Guardian Economics / g1 Economia / InfoMoney / NYT Economy / BBC Business",
+  "sourceUrl": "https://www.theguardian.com/business/live/2026/oct/26/ai-cloud-computing-companies-guppy-level-death-elon-musk-stock-markets-dollar-oil-bond-yieds-latest-news-updates",
+  "sources": [
+    {
+      "name": "The Guardian Economics",
+      "title": "Anthropic files for stock market IPO; Meta announces $95bn fundraising drive to pay for AI expansion – as it happened",
+      "url": "https://www.theguardian.com/business/live/2026/oct/26/ai-cloud-computing-companies-guppy-level-death-elon-musk-stock-markets-dollar-oil-bond-yieds-latest-news-updates"
+    },
+    {
+      "name": "g1 Economia",
+      "title": "Anthropic, dona do Claude, divulga pedido de IPO nos EUA e revela prejuízo bilionário",
+      "url": "https://g1.globo.com/tecnologia/noticia/2026/10/26/anthropic-ipo-eua.ghtml"
+    },
+    {
+      "name": "InfoMoney",
+      "title": "Bancos e Blackstone anunciam financiamento de US$ 63 bi para IA da Anthropic",
+      "url": "https://www.infomoney.com.br/business/bancos-e-blackstone-anunciam-financiamento-de-us-63-bi-para-ia-da-anthropic/"
+    },
+    {
+      "name": "NYT Economy",
+      "title": "What’s Riding on Anthropic Going Public? Nearly Everything.",
+      "url": "https://www.nytimes.com/2026/10/26/technology/anthropic-going-public-stakes.html"
+    },
+    {
+      "name": "BBC Business",
+      "title": "Anthropic warns of 'catastrophic risk' to humankind ahead of blockbuster share listing",
+      "url": "https://www.bbc.co.uk/news/articles/cq398p1wd1evo"
+    }
+  ],
+  "keyPoints": [
+    "Anthropic pediu IPO nos EUA e pretende negociar na Nasdaq sob o código ANT, sem data nem preço definidos",
+    "No primeiro semestre, receita de US$ 16,3 bi e prejuízo de US$ 80,7 bi, em grande parte por variação no valor de dívidas conversíveis",
+    "A empresa alertou para riscos catastróficos da IA e admitiu possível responsabilização judicial",
+    "Meta anunciou captação de até US$ 95 bi para financiar investimentos em IA",
+    "Bolsas americanas subiram após a divulgação dos documentos"
+  ],
+  "body": [
+    "A Anthropic, desenvolvedora do assistente de inteligência artificial Claude, apresentou o pedido de oferta pública inicial de ações (IPO) nos Estados Unidos. A empresa pretende negociar suas ações na Nasdaq sob o código ANT. Os documentos ainda não informam quantas ações serão vendidas, qual será a faixa de preço nem a data da estreia.",
+    "No primeiro semestre de 2026, a companhia teve receita de US$ 16,3 bilhões (cerca de R$ 91,4 bilhões, pela cotação de R$ 5,6048 usada pelo g1) e prejuízo líquido de US$ 80,7 bilhões (cerca de R$ 452,3 bilhões). Segundo a Anthropic, boa parte da perda vem da alta no valor de dívidas que podem ser convertidas em ações. Esse efeito é contabilizado como perda, mas não significa desembolso equivalente em dinheiro. O g1 informa ainda que a receita do segundo trimestre cresceu 1.368% em relação ao mesmo período de 2025.",
+    "Nos documentos, a empresa lista riscos. Segundo a BBC, a Anthropic afirmou que a IA pode representar riscos \"catastróficos ou existenciais para a humanidade\" se for mal desenvolvida ou usada. O texto cita o uso para crimes cibernéticos, o desenvolvimento de armas biológicas, o uso por Estados autoritários e a possibilidade de perda de controle. A companhia também admite possível responsabilização judicial por danos causados por seus modelos. A BBC informa que os donos dos direitos das músicas de Elvis Presley processaram a empresa no mesmo dia, acusando-a de usar canções do artista para treinar o Claude.",
+    "No mesmo dia, a Meta anunciou planos de captar até US$ 95 bilhões em ações, para financiar investimentos em IA. Segundo o The Guardian, a operação tem duas partes: US$ 35 bilhões em ofertas públicas com garantia de subscrição e US$ 60 bilhões em oferta \"at the market\". Também segundo o The Guardian, Nvidia, AMD e Broadcom demonstraram interesse em participar da primeira parte. Já a InfoMoney informou que Bank of America, Blackstone, Citi e Morgan Stanley anunciaram financiamento de US$ 63 bilhões para a capacidade computacional da Anthropic, com entregas previstas para 2027. Segundo o g1, a operação de IPO será coordenada por bancos liderados por Goldman Sachs e Morgan Stanley.",
+    "As bolsas americanas operavam em alta depois da divulgação. Por volta das 10h55 de Brasília, segundo o g1, o Dow Jones subia 0,45%, o S&P 500 avançava 0,57% e o Nasdaq ganhava 0,46%.",
+    "Onde as fontes divergem: Os textos divergem na avaliação da Anthropic. O g1 cita reportagem da Reuters segundo a qual alguns investidores passaram a estimar cerca de US$ 1,5 trilhão, abaixo dos aproximadamente US$ 2 trilhões de uma semana antes, enquanto a BBC diz que a avaliação deve superar a da SpaceX, que teve valor inicial de cerca de US$ 1,8 trilhão. Também há diferença sobre a avaliação de maio, citada pelo g1 como US$ 965 bilhões. Os textos não tratam de todos os mesmos números: o g1 e a BBC informam receita e prejuízo com valores equivalentes, mas o g1 converte para reais. A BBC diz que a Anthropic foi fundada há cinco anos e o g1 diz que foi em 2021."
+  ],
+  "generatedByAI": true
+}

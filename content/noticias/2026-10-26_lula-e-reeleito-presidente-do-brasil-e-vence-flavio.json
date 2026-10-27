@@ -1,0 +1,57 @@
+{
+  "slug": "lula-e-reeleito-presidente-do-brasil-e-vence-flavio",
+  "date": "2026-10-26",
+  "featured": false,
+  "impactScope": "regional",
+  "impactLabel": "Impacto nos Países Vizinhos",
+  "severity": "Tensão Política",
+  "category": "Geopolítica & Fronteiras",
+  "kicker": "ELEIÇÃO PRESIDENCIAL",
+  "title": "Lula é reeleito presidente do Brasil e vence Flávio Bolsonaro no segundo turno",
+  "subtitle": "Lula venceu o segundo turno e vai governar o Brasil por um quarto mandato, não consecutivo. Flávio Bolsonaro contesta o resultado e pede sua anulação.",
+  "author": "MERIDIAN, com base em BBC News Brasil e Al Jazeera",
+  "location": "Brasil",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "Brasil",
+    "Estados Unidos",
+    "México",
+    "Uruguai",
+    "Argentina",
+    "Venezuela"
+  ],
+  "image": "https://ichef.bbci.co.uk/news/1200/branded_portuguese/ea1e/live/2d737380-d0f2-11f1-a9f3-d75f98ab0d20.png",
+  "imageCaption": "Foto: BBC News Brasil.",
+  "source": "BBC News Brasil / Al Jazeera",
+  "sourceUrl": "https://www.bbc.com/portuguese/articles/ck5ynlp6qq57o",
+  "sources": [
+    {
+      "name": "BBC News Brasil",
+      "title": "Lula conquista a 1ª vitória da esquerda na América Latina desde que Trump voltou ao poder; veja mapa",
+      "url": "https://www.bbc.com/portuguese/articles/ck5ynlp6qq57o"
+    },
+    {
+      "name": "Al Jazeera",
+      "title": "What will Lula’s fourth term mean for Brazil?",
+      "url": "https://www.aljazeera.com/video/inside-story/2026/10/26/what-will-lulas-fourth-term-mean-for-brazil?traffic_source=rss"
+    }
+  ],
+  "keyPoints": [
+    "Lula venceu o segundo turno e terá seu quarto mandato, não consecutivo",
+    "Flávio Bolsonaro contesta o resultado e pede a anulação",
+    "A vitória é a primeira de esquerda na América Latina desde a volta de Trump ao poder, segundo a BBC",
+    "Lula é visto como um dos poucos presidentes que enfrentaram abertamente Washington",
+    "Analistas ligam a eleição à avaliação negativa da intervenção americana e das big techs"
+  ],
+  "body": [
+    "Luiz Inácio Lula da Silva (PT) foi declarado vencedor do segundo turno da eleição presidencial brasileira. Segundo a Al Jazeera, será o quarto mandato dele, não consecutivo. Ele havia perdido o primeiro turno para o adversário de direita, mas venceu a segunda votação.",
+    "Flávio Bolsonaro disputa o resultado e afirma que quer a anulação da eleição, de acordo com a Al Jazeera. Já a BBC News Brasil destaca que a vitória de Lula interrompeu o avanço de uma onda de direita na América Latina após a volta de Donald Trump à Presidência dos Estados Unidos, em 2025. Segundo a BBC, na Colômbia, no Peru, na Costa Rica, em Honduras, no Chile, na Bolívia e no Equador venceram candidatos conservadores. A presidente do México, Claudia Sheinbaum, felicitou Lula nas redes sociais.",
+    "Para a professora Carolina Silva Pedroso, da Unifesp, a região segue dominada por governos de direita, com diferentes tons, e a maioria tem forte alinhamento a Trump. A BBC também cita que Lula é um dos poucos presidentes da região que enfrentaram abertamente a ofensiva de Washington, o que dá à reeleição importância histórica na região. Para Sidney Chalhoub, de Harvard e da Unicamp, a vitória pode ser uma virada na América Latina, sobretudo se Trump sofrer uma derrota nas midterms, eleições de meio de mandato nos Estados Unidos.",
+    "Segundo a BBC, a cientista política Denilde Holzhacker, da ESPM, avalia que a campanha de Lula explorou a relação de Flávio Bolsonaro com Javier Milei, presidente da Argentina, e que o eleitor olhou para a situação de vizinhos governados pela direita.",
+    "Pela BBC, além do Brasil, o Uruguai é o único governo de esquerda na América do Sul, com Yamandú Orsi. A Al Jazeera trata os desafios do novo governo Lula como pontos em aberto, sem detalhá-los.",
+    "Onde as fontes divergem: A BBC afirma que a vitória de Lula é a primeira de esquerda na região desde a volta de Trump. A Al Jazeera não trata desse ponto. Sobre a disputa, a Al Jazeera diz que Flávio Bolsonaro contesta o resultado, enquanto a BBC não menciona a contestação. Os textos não trazem números de votação."
+  ],
+  "generatedByAI": true,
+  "inRadar": true,
+  "corridorTag": "BRASIL • ESTADOS UNIDOS • MÉXICO"
+}
