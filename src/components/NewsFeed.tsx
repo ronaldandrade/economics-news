@@ -3,20 +3,16 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CATEGORIAS, type Noticia } from "@/lib/tipos";
-import { CountryChips, ImpactBadge, Masthead } from "./Editorial";
+import { CATEGORIAS, ESCOPOS, ROTULO_ESCOPO, escopoDaUrl, type Escopo, type Noticia } from "@/lib/tipos";
+import { ConsequenceBadge, CountryChips, ImpactBadge, Masthead } from "./Editorial";
 import { NewsImage } from "./NewsImage";
 
-type FiltroImpacto = "all" | "global" | "regional";
+type FiltroImpacto = "all" | Escopo;
 export type NoticiaResumo = Omit<Noticia, "keyPoints" | "body"> & { dataFormatada: string; textoBusca: string };
-
-function impactoDaUrl(valor: string | null): FiltroImpacto {
-  return valor === "global" || valor === "regional" ? valor : "all";
-}
 
 /** Lê ?impacto= da URL (links do rodapé). Fica num Suspense para a home continuar estática. */
 export function NewsFeedComParametros({ noticias }: { noticias: NoticiaResumo[] }) {
-  const impacto = impactoDaUrl(useSearchParams().get("impacto"));
+  const impacto = escopoDaUrl(useSearchParams().get("impacto"));
   return <NewsFeed key={impacto} noticias={noticias} impactoInicial={impacto} />;
 }
 
@@ -69,19 +65,17 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
 
   const pilulas: { valor: FiltroImpacto; rotulo: string; indicador?: string }[] = [
     { valor: "all", rotulo: "Todos os Eventos" },
-    { valor: "global", rotulo: "Impacto Mundial", indicador: "pill-indicator--global" },
-    { valor: "regional", rotulo: "Impacto Fronteiriço / Vizinhos", indicador: "pill-indicator--regional" },
+    ...ESCOPOS.map((e) => ({ valor: e, rotulo: ROTULO_ESCOPO[e], indicador: `pill-indicator--${e}` })),
   ];
 
   const manchete = visaoPadrao ? filtradas.find((n) => n.featured) ?? filtradas[0] : undefined;
   const grade = manchete ? filtradas.filter((n) => n.slug !== manchete.slug) : filtradas;
-  const radar = noticias.filter((n) => n.inRadar).slice(0, 5);
+  const radar = noticias.filter((n) => n.impactScope === "internacional").slice(0, 5);
 
   let tituloFeed = "Panorama Internacional & Desdobramentos";
   if (!visaoPadrao) {
     const partes: string[] = [];
-    if (impacto === "global") partes.push("Impacto Mundial");
-    if (impacto === "regional") partes.push("Impacto Fronteiriço / Vizinhos");
+    if (impacto !== "all") partes.push(ROTULO_ESCOPO[impacto]);
     if (categoria !== "all") partes.push(categoria);
     if (termo) partes.push(`Busca: "${busca.trim()}"`);
     tituloFeed = partes.join(" · ");
@@ -146,6 +140,7 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
                       <NewsImage src={manchete.image} alt={manchete.title} scope={manchete.impactScope} lazy={false} />
                       <div className="lead-card__overlay-badges">
                         <ImpactBadge noticia={manchete} />
+                        <ConsequenceBadge noticia={manchete} />
                       </div>
                     </div>
                     <div className="lead-card__content">
@@ -170,13 +165,14 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
                     </div>
                   </Link>
                 </div>
-                <aside className="sidebar-radar" aria-label="Radar de impacto em países vizinhos">
+                <aside className="sidebar-radar" aria-label="Acontecimentos com impacto entre países">
                   <div className="sidebar-radar__header">
-                    <span className="radar-tag">ALERTA TRANSFRONTEIRIÇO</span>
-                    <h2 className="sidebar-radar__title">Efeito Dominó Regional</h2>
-                    <p className="sidebar-radar__desc">Decisões nacionais que alteram diretamente a economia de países vizinhos.</p>
+                    <span className="radar-tag">ENTRE PAÍSES</span>
+                    <h2 className="sidebar-radar__title">Impacto entre países</h2>
+                    <p className="sidebar-radar__desc">Decisões e choques que afetam diretamente a economia de outros países ou de um bloco.</p>
                   </div>
                   <div className="radar-list">
+                    {radar.length === 0 && <p className="sidebar-radar__desc">Nenhuma matéria recente com impacto entre países.</p>}
                     {radar.map((n) => (
                       <Link key={n.slug} href={`/noticias/${n.slug}`} className="radar-item">
                         <div className="radar-item__corridor">
@@ -201,12 +197,11 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
                 <span className="results-count">{contagem}</span>
               </div>
               <div className="impact-legend">
-                <span className="legend-item">
-                  <span className="pill-indicator pill-indicator--global"></span> Sistêmico / Mundial
-                </span>
-                <span className="legend-item">
-                  <span className="pill-indicator pill-indicator--regional"></span> Regional / Países Vizinhos
-                </span>
+                {ESCOPOS.map((e) => (
+                  <span key={e} className="legend-item">
+                    <span className={`pill-indicator pill-indicator--${e}`}></span> {ROTULO_ESCOPO[e]}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -219,7 +214,10 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
                   <div className="news-card__body">
                     <div className="story-meta-top">
                       <span className="story-kicker">{n.category}</span>
-                      <ImpactBadge noticia={n} />
+                      <span className="story-badges">
+                        <ImpactBadge noticia={n} />
+                        <ConsequenceBadge noticia={n} />
+                      </span>
                     </div>
                     <h3 className="news-card__title">{n.title}</h3>
                     <p className="news-card__excerpt">{n.subtitle}</p>

@@ -2,9 +2,8 @@
   "slug": "lula-e-reeleito-presidente-do-brasil-e-vence-flavio",
   "date": "2026-10-26",
   "featured": false,
-  "impactScope": "regional",
-  "impactLabel": "Impacto nos Países Vizinhos",
-  "severity": "Tensão Política",
+  "impactScope": "nacional",
+  "consequence": "acompanhamento",
   "category": "Geopolítica & Fronteiras",
   "kicker": "ELEIÇÃO PRESIDENCIAL",
   "title": "Lula é reeleito presidente do Brasil e vence Flávio Bolsonaro no segundo turno",
@@ -51,7 +50,5 @@
     "Pela BBC, além do Brasil, o Uruguai é o único governo de esquerda na América do Sul, com Yamandú Orsi. A Al Jazeera trata os desafios do novo governo Lula como pontos em aberto, sem detalhá-los.",
     "Onde as fontes divergem: A BBC afirma que a vitória de Lula é a primeira de esquerda na região desde a volta de Trump. A Al Jazeera não trata desse ponto. Sobre a disputa, a Al Jazeera diz que Flávio Bolsonaro contesta o resultado, enquanto a BBC não menciona a contestação. Os textos não trazem números de votação."
   ],
-  "generatedByAI": true,
-  "inRadar": true,
-  "corridorTag": "BRASIL • ESTADOS UNIDOS • MÉXICO"
+  "generatedByAI": true
 }

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { CATEGORIAS, type Noticia } from "./tipos";
+import { CATEGORIAS, CONSEQUENCIAS, ESCOPOS, type Noticia } from "./tipos";
 
 export * from "./tipos";
 
@@ -19,7 +19,10 @@ function validar(n: Noticia, arquivo: string): Noticia {
     if (typeof n[campo] !== "string" || !n[campo].trim()) erros.push(`"${campo}" vazio`);
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(n.date ?? "")) erros.push(`"date" deve ser AAAA-MM-DD`);
-  if (n.impactScope !== "global" && n.impactScope !== "regional") erros.push(`"impactScope" deve ser global ou regional`);
+  // "regional" era o valor antigo: a matéria precisa ser reclassificada à mão, não convertida automaticamente
+  if (!ESCOPOS.includes(n.impactScope)) erros.push(`"impactScope" deve ser ${ESCOPOS.join(", ")} (recebido: ${n.impactScope})`);
+  if (!CONSEQUENCIAS.includes(n.consequence)) erros.push(`"consequence" deve ser ${CONSEQUENCIAS.join(", ")} (recebido: ${n.consequence})`);
+  if (n.consequence === "critica" && !n.consequenceBasis?.trim()) erros.push(`"consequence" crítica exige "consequenceBasis" com a evidência das fontes`);
   if (!CATEGORIAS.includes(n.category)) erros.push(`"category" desconhecida: ${n.category}`);
   if (!Array.isArray(n.body) || n.body.length === 0) erros.push(`"body" sem parágrafos`);
   if (!Array.isArray(n.affectedCountries)) erros.push(`"affectedCountries" deve ser uma lista`);

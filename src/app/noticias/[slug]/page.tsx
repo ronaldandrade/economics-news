@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CountryChips, ImpactBadge, Masthead, UtilityBar } from "@/components/Editorial";
+import { ConsequenceBadge, CountryChips, ImpactBadge, Masthead, UtilityBar } from "@/components/Editorial";
+import { ShareBar } from "@/components/ShareBar";
 import { NewsImage } from "@/components/NewsImage";
 import { formatarData, formatarDataLonga, noticiaPorSlug, relacionadas, todasNoticias } from "@/lib/noticias";
 
@@ -62,6 +63,7 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
             <div className="modal-article__topbar">
               <div className="modal-article__badges">
                 <ImpactBadge noticia={noticia} />
+                <ConsequenceBadge noticia={noticia} />
                 <span className="country-chip">{noticia.category}</span>
               </div>
               <Link href="/" className="modal-close-btn">
@@ -85,6 +87,7 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                     <span>{noticia.readTime}</span>
                   </div>
                 </div>
+                <ShareBar titulo={noticia.title} caminho={`/noticias/${noticia.slug}`} />
               </header>
 
               <figure className="modal-article__figure">
@@ -92,13 +95,21 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                 {noticia.imageCaption && <figcaption>{noticia.imageCaption}</figcaption>}
               </figure>
 
-              <section className="impact-briefing" aria-label="Resumo de impacto geopolítico">
+              <section className="impact-briefing" aria-label="Alcance e consequência">
                 <div className="impact-briefing__header">
-                  <h2 className="impact-briefing__title">Mapeamento de Repercussão Internacional</h2>
-                  <span className="severity-badge">{noticia.severity || "Monitoramento Ativo"}</span>
+                  <h2 className="impact-briefing__title">Alcance e consequência</h2>
+                  <span className="story-badges">
+                    <ImpactBadge noticia={noticia} />
+                    <ConsequenceBadge noticia={noticia} />
+                  </span>
                 </div>
+                {noticia.consequenceBasis && (
+                  <p className="consequence-basis">
+                    <strong>Base da classificação:</strong> {noticia.consequenceBasis}
+                  </p>
+                )}
                 <div className="impact-briefing__affected">
-                  <span className="affected-label">Países / Blocos diretamente afetados:</span>
+                  <span className="affected-label">Países e blocos citados nas fontes:</span>
                   <div className="country-tags">
                     <CountryChips paises={noticia.affectedCountries} />
                   </div>
@@ -153,7 +164,10 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                   <div className="modal-related__grid">
                     {outras.map((r) => (
                       <Link key={r.slug} href={`/noticias/${r.slug}`} className="related-mini-card">
-                        <ImpactBadge noticia={r} />
+                        <span className="story-badges">
+                          <ImpactBadge noticia={r} />
+                          <ConsequenceBadge noticia={r} />
+                        </span>
                         <h4>{r.title}</h4>
                       </Link>
                     ))}

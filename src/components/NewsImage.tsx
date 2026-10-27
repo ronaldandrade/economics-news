@@ -5,9 +5,12 @@ import type { Escopo } from "@/lib/tipos";
 
 // SVG editorial de reserva quando a imagem da fonte não carrega
 function fallbackSvg(scope: Escopo) {
-  const bg = scope === "global" ? "#2b131d" : "#102a2e";
-  const accent = scope === "global" ? "#e11d48" : "#14b8a6";
-  const label = scope === "global" ? "IMPACTO MUNDIAL" : "IMPACTO REGIONAL";
+  const cores: Record<Escopo, [string, string, string]> = {
+    global: ["#2b131d", "#e11d48", "IMPACTO GLOBAL"],
+    internacional: ["#102a2e", "#14b8a6", "IMPACTO ENTRE PAÍSES"],
+    nacional: ["#1f1c19", "#a8998a", "IMPACTO NACIONAL"],
+  };
+  const [bg, accent, label] = cores[scope];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
     <rect width="800" height="500" fill="${bg}"/>
     <g stroke="${accent}" stroke-opacity="0.22" stroke-width="1">

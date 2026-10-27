@@ -2,9 +2,9 @@
   "slug": "ibovespa-despenca-circuit-breaker-e-acionado-e-dolar-sobe",
   "date": "2026-10-26",
   "featured": false,
-  "impactScope": "regional",
-  "impactLabel": "Impacto nos Países Vizinhos",
-  "severity": "Alerta de Volatilidade Alta",
+  "impactScope": "nacional",
+  "consequence": "critica",
+  "consequenceBasis": "Circuit breaker na abertura e queda de 13,88% do Ibovespa, a maior perda diária desde março de 2020; o dólar foi de R$ 4,99 para R$ 5,40 (BBC).",
   "category": "Macroeconomia",
   "kicker": "CIRCUIT BREAKER NA B3",
   "title": "Ibovespa despenca, circuit breaker é acionado e dólar sobe após reeleição de Lula",
@@ -51,7 +51,5 @@
     "Segundo a BBC, Cassio Viana de Jesus, da Pilar Capital, afirma que a trajetória das contas públicas é o ponto central. A Al Jazeera registra que a equipe de Lula busca um superávit primário de cerca de 1,3% do PIB até 2030, e que a dívida pública já passa de 82% do PIB. A mesma fonte diz que a escolha do ministro da Fazenda será observada de perto pelo mercado.",
     "Onde as fontes divergem: A queda do Ibovespa varia conforme a fonte: o g1 cita queda de 16,48% durante o pregão, enquanto a BBC informa fechamento em queda de 13,88%. A Al Jazeera fala em queda de 10% no índice à vista e de cerca de 15% nos contratos futuros, e em queda de 12% do real à vista, sem indicar o fechamento. A BBC diz que o dólar fechou em R$ 5,40 e a Al Jazeera não informa cotação final. Os textos também divergem sobre o horário do acionamento: a BBC diz que ocorreu logo na abertura, e o g1 não detalha esse ponto."
   ],
-  "generatedByAI": true,
-  "inRadar": true,
-  "corridorTag": "BRASIL"
+  "generatedByAI": true
 }

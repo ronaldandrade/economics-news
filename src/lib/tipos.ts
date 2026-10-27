@@ -9,17 +9,52 @@ export const CATEGORIAS = [
 ] as const;
 
 export type Categoria = (typeof CATEGORIAS)[number];
-export type Escopo = "global" | "regional";
+
+/**
+ * Alcance geográfico da consequência, não dos países citados nem da sede das empresas.
+ * - global: atinge mercados, preços ou cadeias em vários continentes.
+ * - internacional: afeta diretamente a economia de dois ou mais países ou de um bloco (vizinhos ou não).
+ * - nacional: o efeito descrito nas fontes fica concentrado num país.
+ */
+export const ESCOPOS = ["global", "internacional", "nacional"] as const;
+export type Escopo = (typeof ESCOPOS)[number];
+
+/**
+ * Tamanho da consequência, independente do alcance.
+ * - acompanhamento: proposta, anúncio ou efeito ainda incerto.
+ * - relevante: efeito concreto e medido nas fontes sobre preços, fluxos ou regras de um mercado.
+ * - critica: choque amplo já em curso, com números que mostram disrupção séria; exige consequenceBasis.
+ */
+export const CONSEQUENCIAS = ["acompanhamento", "relevante", "critica"] as const;
+export type Consequencia = (typeof CONSEQUENCIAS)[number];
+
+export const ROTULO_ESCOPO: Record<Escopo, string> = {
+  global: "Impacto global",
+  internacional: "Impacto entre países",
+  nacional: "Impacto nacional",
+};
+
+export const ROTULO_CONSEQUENCIA: Record<Consequencia, string> = {
+  acompanhamento: "Em acompanhamento",
+  relevante: "Relevante",
+  critica: "Crítica",
+};
+
+/** Links antigos usavam ?impacto=regional para o que hoje é "internacional". */
+export function escopoDaUrl(valor: string | null): Escopo | "all" {
+  if (valor === "regional") return "internacional";
+  return (ESCOPOS as readonly string[]).includes(valor ?? "") ? (valor as Escopo) : "all";
+}
 
 export interface Noticia {
   slug: string;
   date: string;
   featured: boolean;
-  inRadar?: boolean;
   corridorTag?: string;
   impactScope: Escopo;
-  impactLabel: string;
-  severity: string;
+  consequence: Consequencia;
+  /** Evidência das fontes que sustenta a consequência; obrigatória quando é "critica". */
+  consequenceBasis?: string;
   category: Categoria;
   kicker: string;
   title: string;

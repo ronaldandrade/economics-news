@@ -1,15 +1,20 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { Noticia } from "@/lib/tipos";
+import { ROTULO_CONSEQUENCIA, ROTULO_ESCOPO, type Noticia } from "@/lib/tipos";
 import { ThemeToggle } from "./ThemeToggle";
 
-export function ImpactBadge({ noticia }: { noticia: Pick<Noticia, "impactScope" | "impactLabel"> }) {
-  const global = noticia.impactScope === "global";
+export function ImpactBadge({ noticia }: { noticia: Pick<Noticia, "impactScope"> }) {
   return (
-    <span className={`impact-badge ${global ? "impact-badge--global" : "impact-badge--regional"}`}>
-      <span className={`pill-indicator ${global ? "pill-indicator--global" : "pill-indicator--regional"}`}></span>
-      {noticia.impactLabel}
+    <span className={`impact-badge impact-badge--${noticia.impactScope}`}>
+      <span className={`pill-indicator pill-indicator--${noticia.impactScope}`}></span>
+      {ROTULO_ESCOPO[noticia.impactScope]}
     </span>
+  );
+}
+
+export function ConsequenceBadge({ noticia }: { noticia: Pick<Noticia, "consequence"> }) {
+  return (
+    <span className={`consequence-badge consequence-badge--${noticia.consequence}`}>{ROTULO_CONSEQUENCIA[noticia.consequence]}</span>
   );
 }
 
@@ -52,7 +57,7 @@ export function Masthead({ busca, children }: { busca?: ReactNode; children?: Re
         <div className={`masthead__grid${children ? "" : " masthead__grid--compact"}`}>
           <div className="masthead__meta">
             <p className="masthead__kicker">MONITOR DE IMPACTO SISTÊMICO</p>
-            <p className="masthead__sub">Análise de eventos com repercussão mundial ou efeito cascata entre países vizinhos.</p>
+            <p className="masthead__sub">Acontecimentos com consequências para vários países ou para sistemas globais.</p>
           </div>
           <div className="masthead__brand">
             <Link href="/" className="brand-logo">
@@ -75,7 +80,7 @@ export function SiteFooter({ fontes }: { fontes: string[] }) {
         <div className="site-footer__brand">
           <span className="brand-logo brand-logo--sm">MERIDIAN</span>
           <p>
-            Jornalismo analítico sobre choques econômicos globais, corredores logísticos e tensões transfronteiriças. As matérias são
+            Jornalismo econômico sobre acontecimentos com consequências para vários países ou para sistemas globais. As matérias são
             resumos em português de reportagens publicadas por {fontes.join(", ")}, com link para a fonte original.
           </p>
         </div>
@@ -84,18 +89,19 @@ export function SiteFooter({ fontes }: { fontes: string[] }) {
             <h3>Raio de Cobertura</h3>
             <ul>
               <li>
-                <Link href="/?impacto=global">Risco Sistêmico Global</Link>
+                <Link href="/?impacto=global">Impacto global</Link>
               </li>
               <li>
-                <Link href="/?impacto=regional">Fronteiras &amp; Blocos Vizinhos</Link>
+                <Link href="/?impacto=internacional">Impacto entre países</Link>
               </li>
             </ul>
           </div>
           <div>
             <h3>Critério Editorial</h3>
             <p className="footer-note">
-              Publicamos apenas acontecimentos com potencial de alterar cadeias produtivas internacionais ou gerar impacto direto em
-              nações adjacentes.
+              Cada matéria indica o alcance da consequência (nacional, entre países ou global) e o tamanho dela (em
+              acompanhamento, relevante ou crítica), com base no que as fontes citadas mostram. Citar vários países ou uma
+              multinacional não basta para classificar um fato como global.
             </p>
           </div>
         </div>

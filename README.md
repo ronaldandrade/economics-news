@@ -26,7 +26,7 @@ Na Vercel, importe o repositório e use as configurações padrão de Next.js. A
 ```
 content/noticias/            uma notícia por arquivo: AAAA-MM-DD_slug.json
 src/app/layout.tsx           fontes, tema, rodapé e metadados globais
-src/app/page.tsx             capa: manchete, radar regional e grade
+src/app/page.tsx             capa: manchete, coluna "Impacto entre países" e grade
 src/app/noticias/[slug]/     página de cada matéria (estática, com Open Graph e JSON-LD)
 src/app/sitemap.ts           sitemap.xml com todas as matérias
 src/app/robots.ts            robots.txt
@@ -50,9 +50,11 @@ Campos de cada notícia:
 | `slug` | sim | endereço `/noticias/<slug>` (a-z, 0-9 e hífen) |
 | `date` | sim | `AAAA-MM-DD`, ordena a capa |
 | `featured` | não | `true` põe a matéria como manchete do dia |
-| `inRadar`, `corridorTag` | não | aparece na coluna "Efeito Dominó Regional" |
-| `impactScope` | sim | `global` ou `regional` (filtro de impacto) |
-| `impactLabel`, `severity`, `kicker` | sim | selos e chapéu |
+| `impactScope` | sim | alcance da consequência: `global`, `internacional` ou `nacional` (veja os critérios abaixo) |
+| `consequence` | sim | tamanho da consequência: `acompanhamento`, `relevante` ou `critica` |
+| `consequenceBasis` | só para `critica` | evidência das fontes, com números, que sustenta a classificação |
+| `corridorTag` | não | rótulo da coluna "Impacto entre países" (ex.: "ESTADOS UNIDOS • CHINA") |
+| `kicker` | sim | chapéu |
 | `category` | sim | uma das editorias de `src/lib/tipos.ts` |
 | `title`, `subtitle`, `body` | sim | título, linha fina e parágrafos |
 | `keyPoints` | não | lista "Por que este evento importa" |
@@ -67,7 +69,25 @@ Campos de cada notícia:
 
 **Agente de notícias.** `agente-noticias/` lê 11 feeds RSS, junta os fatos noticiados por pelo menos 2 veículos, escreve o resumo com a API da Anthropic e grava os JSON neste formato numa branch `noticias/AAAA-MM-DD`, abrindo um PR. Você revisa o preview da Vercel e faz o merge. Instalação, agendamento e custo estão em `agente-noticias/README.md`.
 
-**Capa.** `page.tsx` carrega as 60 mais recentes e manda ao navegador só o necessário para os cartões e a busca. A manchete é a mais recente com `featured: true` (ou a mais recente de todas). Os filtros de impacto e editoria e a busca rodam no navegador. Os links do rodapé usam `/?impacto=global` e `/?impacto=regional`.
+**Classificação.** Alcance e consequência são campos separados e valem pelo efeito que as fontes descrevem, não pelos países citados nem pela sede das empresas. Os critérios estão em `src/lib/tipos.ts` e são os mesmos do prompt do agente:
+
+| Alcance | Quando |
+|---|---|
+| `global` | efeito sobre mercados, preços ou cadeias em vários continentes |
+| `internacional` | efeito direto sobre a economia de dois ou mais países ou de um bloco (vizinhos ou não); aparece como "Impacto entre países" |
+| `nacional` | efeito concentrado num país |
+
+| Consequência | Quando |
+|---|---|
+| `acompanhamento` | proposta, anúncio, plano ou efeito ainda incerto |
+| `relevante` | efeito concreto e medido nas fontes sobre preços, fluxos ou regras de um mercado |
+| `critica` | choque amplo já em curso, com números que mostram disrupção séria; exige `consequenceBasis` |
+
+Um arquivo com `impactScope: "regional"` (formato antigo) faz o build falhar: a matéria precisa ser reclassificada à mão, não convertida automaticamente.
+
+**Capa.** `page.tsx` carrega as 60 mais recentes e manda ao navegador só o necessário para os cartões e a busca. A manchete é a mais recente com `featured: true` (ou a mais recente de todas). Os filtros de impacto e editoria e a busca rodam no navegador. O filtro de alcance usa `/?impacto=global`, `internacional` ou `nacional`; links antigos com `/?impacto=regional` abrem "Impacto entre países". A coluna lateral mostra as matérias `internacional` mais recentes.
+
+**Compartilhar.** A página de cada matéria tem "Compartilhar" (a janela nativa do celular; no desktop, copia o link), "Copiar link" e botões para WhatsApp, X, LinkedIn, Facebook, Telegram e e-mail. O endereço é montado na hora do clique a partir do domínio aberto, então funciona no preview, no domínio próprio e no localhost.
 
 **Tema.** Um script curto no `<body>` aplica o tema salvo (ou o do sistema) antes da primeira pintura, então não há piscada ao carregar no modo escuro.
 

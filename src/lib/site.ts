@@ -6,4 +6,4 @@ export const SITE_URL =
 
 export const SITE_NOME = "MERIDIAN";
 export const SITE_DESCRICAO =
-  "Portal de notícias econômicas e geopolíticas em português, com foco em eventos de impacto global e transfronteiriço e link para as fontes originais.";
+  "Portal de notícias econômicas e geopolíticas em português, sobre acontecimentos com consequências para vários países ou para sistemas globais, com link para as fontes originais.";
