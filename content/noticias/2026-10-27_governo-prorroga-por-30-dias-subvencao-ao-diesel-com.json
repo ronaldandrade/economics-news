@@ -2,9 +2,8 @@
   "slug": "governo-prorroga-por-30-dias-subvencao-ao-diesel-com",
   "date": "2026-10-27",
   "featured": false,
-  "impactScope": "regional",
-  "impactLabel": "Impacto nos Países Vizinhos",
-  "severity": "Risco Energético Alto",
+  "impactScope": "nacional",
+  "consequence": "relevante",
   "category": "Energia & Recursos",
   "kicker": "SUBVENÇÃO AO DIESEL",
   "title": "Governo prorroga por 30 dias subvenção ao diesel com petróleo acima de US$ 100",
@@ -46,6 +45,5 @@
     "Onde as fontes divergem: A fonte g1 diz que a portaria seria publicada nesta terça-feira; a InfoMoney não trata disso. A InfoMoney menciona um subsídio adicional de R$ 1,40 por litro para importações, que o g1 não cita. O g1 afirma que o benefício cairia para R$ 1 sem renovação; a InfoMoney não informa esse valor. Os textos não tratam dos mesmos aspectos e não há contradição direta nos números comuns."
   ],
   "generatedByAI": true,
-  "inRadar": true,
   "corridorTag": "BRASIL"
 }

@@ -2,9 +2,8 @@
   "slug": "reino-unido-anuncia-salario-minimo-e-medidas-contra-custo-de",
   "date": "2026-10-27",
   "featured": true,
-  "impactScope": "regional",
-  "impactLabel": "Impacto nos Países Vizinhos",
-  "severity": "Pressão de Custo de Vida",
+  "impactScope": "nacional",
+  "consequence": "relevante",
   "category": "Macroeconomia",
   "kicker": "ORÇAMENTO BRITÂNICO",
   "title": "Reino Unido anuncia salário mínimo e medidas contra custo de vida no orçamento",
@@ -46,6 +45,5 @@
     "Onde as fontes divergem: A BBC diz que o reajuste de 3,9% para a faixa de 18 a 20 anos é relatado pelo The Times, e não confirmado pelo governo. Os valores exatos do salário mínimo vêm do The Times, citado pela BBC. O Guardian trata a folga fiscal de forma diferente da BBC e não cita o aumento do salário mínimo, por ter sido escrito antes do anúncio. Os valores de folga fiscal e de apoio à energia vêm apenas do Guardian."
   ],
   "generatedByAI": true,
-  "inRadar": true,
   "corridorTag": "REINO UNIDO"
 }
