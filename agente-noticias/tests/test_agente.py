@@ -485,3 +485,23 @@ def test_resumo_que_falha_nao_derruba_os_outros(tmp_path):
     llm, _ = cliente([])  # sem resposta para o resumo: a chamada levanta IndexError
     rel = executar(cfg_base(), FONTES, llm, tmp_path, seco=True, log=lambda *_: None, agora=AGORA)
     assert rel["posts"] == [] and len(rel["falhas"]) == 1 and "IndexError" in rel["falhas"][0]["erro"]
+
+
+def test_json_do_site_sai_sem_marcacao_markdown():
+    from agente_noticias.publicar import texto_puro
+    assert texto_puro("O **BCE** subiu os juros, [segundo a BBC](https://bbc.test/x), em *0,25* ponto.") == "O BCE subiu os juros, segundo a BBC, em 0,25 ponto."
+    assert texto_puro("- item um\n- item dois") == "item um item dois"
+    # asterisco e sublinhado que não são marcação ficam
+    assert texto_puro("Alta de 2 * 3 e o arquivo meu_nome_aqui") == "Alta de 2 * 3 e o arquivo meu_nome_aqui"
+    post = dict(RESUMO_BOM, corpo="## Título\n\nO **banco** subiu os juros.", pontos=["**Juros** a 4,5%"],
+                fontes=[{"nome": "A", "titulo": "t", "link": "https://a.test"}])
+    n = noticia_para_site(post, "2026-10-26", "x")
+    assert n["body"] == ["Título", "O banco subiu os juros."] and n["keyPoints"] == ["Juros a 4,5%"]
+
+
+def test_pagina_fora_de_utf8_mantem_os_acentos():
+    from agente_noticias.extrair import decodificar
+    html = '<html><head><meta charset="iso-8859-1"></head><body>Inflação e câmbio</body></html>'
+    assert "Inflação e câmbio" in decodificar(html.encode("latin-1"))
+    assert "Inflação" in decodificar("<p>Inflação</p>".encode("cp1252"))  # sem <meta>: windows-1252
+    assert decodificar("Inflação €".encode("utf-8")) == "Inflação €"

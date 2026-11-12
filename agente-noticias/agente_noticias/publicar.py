@@ -204,11 +204,29 @@ def so_https(url):
     return url if url.lower().startswith("https://") else ""
 
 
+def texto_puro(texto):
+    """Tira a marcação Markdown: o site mostra o texto como está, então um link ou negrito
+    do modelo apareceria com os colchetes e asteriscos."""
+    linhas = []
+    for linha in texto.splitlines():
+        linha = re.sub(r"^\s*(?:#{1,6}|>|[-*+]|\d+[.)])\s+", "", linha)  # título, citação, item de lista
+        linhas.append(linha.strip())
+    texto = " ".join(l for l in linhas if l)
+    texto = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", texto)  # imagem
+    texto = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", texto)  # link: fica o texto
+    texto = re.sub(r"(\*\*|__)(?=\S)(.+?)(?<=\S)\1", r"\2", texto)  # negrito
+    texto = re.sub(r"(?<![\w*])\*(?=\S)([^*]+?)(?<=\S)\*(?![\w*])", r"\1", texto)  # itálico com *
+    texto = re.sub(r"(?<![\w_])_(?=\S)([^_]+?)(?<=\S)_(?![\w_])", r"\1", texto)  # itálico com _
+    texto = re.sub(r"`([^`]+)`", r"\1", texto)
+    return re.sub(r"\s+", " ", texto).strip()
+
+
 def noticia_para_site(post, data, slug):
     """Converte o post do agente no formato de content/noticias/*.json do site Next.js."""
-    paragrafos = [p.strip() for p in re.split(r"\n\s*\n", post["corpo"]) if p.strip()]
+    paragrafos = [texto_puro(p) for p in re.split(r"\n\s*\n", post["corpo"]) if p.strip()]
+    paragrafos = [p for p in paragrafos if p]
     if post.get("divergencias", "").strip():
-        paragrafos.append("Onde as fontes divergem: " + post["divergencias"].strip())
+        paragrafos.append("Onde as fontes divergem: " + texto_puro(post["divergencias"]))
     paises = post.get("paises") or []
     alcance = post.get("alcance", "nacional")
     fontes = post["fontes"]
@@ -233,12 +251,12 @@ def noticia_para_site(post, data, slug):
         "source": " / ".join(nomes),
         "sourceUrl": so_https(fontes[0]["link"]),
         "sources": [{"name": f["nome"], "title": f["titulo"], "url": so_https(f["link"])} for f in fontes],
-        "keyPoints": post["pontos"],
+        "keyPoints": [texto_puro(p) for p in post["pontos"]],
         "body": paragrafos,
         "generatedByAI": True,
     }
     if post.get("base_consequencia", "").strip():
-        noticia["consequenceBasis"] = post["base_consequencia"].strip()
+        noticia["consequenceBasis"] = texto_puro(post["base_consequencia"])
     if alcance == "internacional":
         noticia["corridorTag"] = " • ".join(p.upper() for p in paises[:3])
     return noticia

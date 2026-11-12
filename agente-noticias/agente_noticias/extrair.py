@@ -13,6 +13,24 @@ except ImportError as e:
 
 OG_IMAGE = re.compile(r"""<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]*>""", re.I)
 CONTEUDO = re.compile(r"""content=["']([^"']+)["']""", re.I)
+CHARSET = re.compile(rb"""<meta[^>]+charset\s*=\s*["']?\s*([\w-]+)""", re.I)
+
+
+def decodificar(conteudo):
+    """Bytes da página em texto. A maioria é UTF-8; quando não é (sites antigos em ISO-8859-1),
+    vale o charset declarado no <meta> e, sem ele, windows-1252. Antes tudo era lido como UTF-8
+    e os acentos dessas páginas viravam "�" no texto enviado ao modelo."""
+    try:
+        return conteudo.decode("utf-8")
+    except UnicodeDecodeError:
+        pass
+    declarado = CHARSET.search(conteudo[:4096])
+    for codificacao in ([declarado.group(1).decode("ascii")] if declarado else []) + ["cp1252"]:
+        try:
+            return conteudo.decode(codificacao)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return conteudo.decode("utf-8", errors="replace")
 
 
 def imagem_da_pagina(pagina, url):
@@ -26,7 +44,7 @@ def imagem_da_pagina(pagina, url):
 def ler_artigo(url, timeout=20, limite=6000):
     """Texto principal e imagem de destaque (og:image) da página; vazios se der erro ou paywall."""
     try:
-        pagina = baixar(url, timeout).decode("utf-8", errors="replace")
+        pagina = decodificar(baixar(url, timeout))
     except Exception:
         return "", ""
     try:
