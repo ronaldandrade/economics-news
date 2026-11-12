@@ -3,7 +3,7 @@ import { UtilityBar } from "@/components/Editorial";
 import { NewsFeed, NewsFeedComParametros, type NoticiaResumo } from "@/components/NewsFeed";
 import { formatarData, formatarDataLonga, normalizarBusca, todasNoticias } from "@/lib/noticias";
 
-// Quantas matérias a home carrega; as mais antigas seguem acessíveis pela URL e pelo sitemap.
+// Quantas matérias a home carrega; as mais antigas ficam em /arquivo.
 const LIMITE_HOME = 60;
 
 export default function Home() {

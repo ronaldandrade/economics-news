@@ -94,6 +94,9 @@ export function SiteFooter({ fontes }: { fontes: string[] }) {
               <li>
                 <Link href="/?impacto=internacional">Impacto entre países</Link>
               </li>
+              <li>
+                <Link href="/arquivo">Arquivo completo</Link>
+              </li>
             </ul>
           </div>
           <div>

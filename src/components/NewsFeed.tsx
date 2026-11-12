@@ -256,6 +256,9 @@ export function NewsFeed({
                 </Link>
               ))}
             </section>
+            <p className="archive-cta">
+              <Link href="/arquivo">Ver todas as matérias no arquivo &rarr;</Link>
+            </p>
           </>
         )}
       </main>

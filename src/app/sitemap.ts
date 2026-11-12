@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const noticias = todasNoticias();
   return [
     { url: SITE_URL, lastModified: noticias[0]?.date, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/arquivo`, lastModified: noticias[0]?.date, changeFrequency: "daily", priority: 0.5 },
     ...noticias.map((n) => ({ url: `${SITE_URL}/noticias/${n.slug}`, lastModified: n.date, priority: 0.7 })),
   ];
 }

@@ -91,6 +91,14 @@ export function formatarData(data: string): string {
   return formatoData.format(new Date(`${data}T12:00:00Z`)).replace(/\./g, "").replace(/ de /g, " ");
 }
 
+const formatoMes = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" });
+
+/** "2026-10" vira "Outubro de 2026". */
+export function formatarMes(mes: string): string {
+  const texto = formatoMes.format(new Date(`${mes}-15T12:00:00Z`));
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
 export function formatarDataLonga(data: string): string {
   const texto = formatoDataLonga.format(new Date(`${data}T12:00:00Z`));
   return texto.charAt(0).toUpperCase() + texto.slice(1);
