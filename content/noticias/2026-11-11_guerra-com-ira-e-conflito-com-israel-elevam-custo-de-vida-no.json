@@ -1,0 +1,44 @@
+{
+  "slug": "guerra-com-ira-e-conflito-com-israel-elevam-custo-de-vida-no",
+  "date": "2026-11-11",
+  "featured": true,
+  "impactScope": "nacional",
+  "consequence": "acompanhamento",
+  "category": "Macroeconomia",
+  "kicker": "CRISE NO LÍBANO",
+  "title": "Guerra com Irã e conflito com Israel elevam custo de vida no Líbano, diz NYT",
+  "subtitle": "Segundo o New York Times, conflito do Hezbollah com Israel e guerra EUA-Israel contra o Irã agravaram problemas econômicos do Líbano. O resumo não traz dados sobre combustíveis.",
+  "author": "MERIDIAN, com base em NYT Economy",
+  "location": "Líbano",
+  "readTime": "1 min de leitura",
+  "affectedCountries": [
+    "Líbano",
+    "Israel",
+    "Irã",
+    "Estados Unidos"
+  ],
+  "image": "https://static01.nyt.com/images/2026/11/11/multimedia/11int-lebanon-economy-01-vlbp/11int-lebanon-economy-01-vlbp-mediumSquareAt3X.jpg",
+  "imageCaption": "Foto: NYT Economy.",
+  "source": "NYT Economy",
+  "sourceUrl": "https://www.nytimes.com/2026/11/11/world/middleeast/lebanon-economy-crisis-corruption-war.html",
+  "sources": [
+    {
+      "name": "NYT Economy",
+      "title": "Lebanon Faces Economic ‘Catastrophe’ After War and Years of Mismanagement",
+      "url": "https://www.nytimes.com/2026/11/11/world/middleeast/lebanon-economy-crisis-corruption-war.html"
+    }
+  ],
+  "keyPoints": [
+    "Segundo o NYT, o conflito do Hezbollah com Israel e a guerra EUA-Israel contra o Irã agravaram problemas econômicos sistêmicos do Líbano.",
+    "O jornal afirma que o custo de vida subiu e que muitos libaneses demonstram desespero.",
+    "A reportagem usa a palavra 'catástrofe' no título para descrever a situação econômica, após a guerra e anos de má gestão."
+  ],
+  "body": [
+    "O New York Times afirma que o conflito entre o Hezbollah e Israel e a guerra entre EUA, Israel e Irã agravaram os problemas sistêmicos da economia do Líbano. Segundo o jornal, o custo de vida subiu e muitos libaneses demonstram desespero.",
+    "O título da reportagem usa a palavra \"catástrofe\" para descrever a situação econômica do país, após a guerra e anos de má gestão. Esse termo aparece no título, e o resumo do feed não o desenvolve com dados.",
+    "O texto disponível para análise é apenas o resumo do feed. Ele não traz valores, índices de preços, percentuais nem medidas oficiais. Também não há, no resumo, informações específicas sobre preços de combustíveis ou de energia, embora o acontecimento indicado trate desse tema. Dados que possam existir na reportagem completa não constam do material analisado.",
+    "A análise se baseia somente nesse resumo, sem outras fontes para comparação.",
+    "Onde as fontes divergem: Há apenas uma fonte. O resumo do feed do NYT não traz dados sobre combustíveis ou energia, embora o acontecimento indicado trate desse tema. Não há outras fontes para comparação."
+  ],
+  "generatedByAI": true
+}
