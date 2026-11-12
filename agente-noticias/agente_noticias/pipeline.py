@@ -3,11 +3,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .agrupar import agrupar, ranquear
+from .auditor import auditar_materia
 from .coletar import coletar
 from .estado import Estado
 from .extrair import material_do_grupo
 from .publicar import PublicadorArquivo, criar_publicador
-from .resumir import resumir
+from .resumir import reescrever_pos_auditoria, resumir
 
 
 def destino_local(cfg_publicacao, pasta, raiz):
@@ -31,7 +32,19 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
 
     log("== agrupando acontecimentos repetidos entre sites")
     grupos = agrupar(llm, cfg["modelos"]["agrupar"], itens, estado.eventos())
-    escolhidos, descartados = ranquear(grupos, cfg.get("min_fontes", 2), cfg.get("max_posts", 3), estado.links())
+    meta_posts = cfg.get("max_posts", 5)
+    modelo_auditor = cfg.get("modelos", {}).get("auditar")
+    permitir_avulsas = cfg.get("permitir_avulsas", False)
+    limite_pool = max(meta_posts * 2, 10) if modelo_auditor else meta_posts
+    candidatos_pool, descartados = ranquear(
+        grupos,
+        cfg.get("min_fontes", 2),
+        limite_pool,
+        estado.links(),
+        permitir_avulsas=permitir_avulsas,
+    )
+    escolhidos = list(candidatos_pool[:meta_posts])
+    suplentes = list(candidatos_pool[meta_posts:])
     relatorio["grupos"] = [
         {"evento": g["evento"], "fontes": g["fontes"], "relevancia": g["relevancia"],
          "alcance": g["alcance_economico"], "canal": g["canal_economico"]}
@@ -39,13 +52,20 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
     ]
     relatorio["descartados"] = descartados
     for g in escolhidos:
-        log(f"   ✓ {len(g['fontes'])} fontes · {g['evento']}")
+        avulso_tag = " (mais relevante não repetida)" if len(g["veiculos"]) < cfg.get("min_fontes", 2) else ""
+        log(f"   ✓ {len(g['fontes'])} fonte(s) · {g['evento']}{avulso_tag}")
+    if suplentes:
+        log(f"   ({len(suplentes)} pauta(s) suplente(s) na reserva caso alguma seja reprovada)")
     if not escolhidos:
-        log("   nenhum acontecimento atingiu o mínimo de fontes")
+        log("   nenhum acontecimento elegível para publicação")
 
-    log("== resumindo")
+    log("== resumindo e auditando com revisor independente")
     posts, falhas = [], []
-    for g in escolhidos:
+    tentativas_auditoria = cfg.get("tentativas_auditoria", 1) if modelo_auditor else 0
+    indice = 0
+    while indice < len(escolhidos):
+        g = escolhidos[indice]
+        indice += 1
         try:
             material = material_do_grupo(g, cfg.get("extrair_texto", True), cfg.get("max_artigos_por_evento", 5))
             post = resumir(llm, cfg["modelos"]["resumir"], g, material)
@@ -53,16 +73,70 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
             # um resumo que falha não joga fora os outros da rodada, que já foram pagos
             falhas.append({"evento": g["evento"], "erro": f"{type(e).__name__}: {e}"})
             log(f"   ! {g['evento']}: {falhas[-1]['erro']}")
+            if suplentes and sum(1 for p in posts if p["status"] == "pronto") < meta_posts:
+                prox = suplentes.pop(0)
+                log(f"   + acionando pauta suplente da fila: {prox['evento']}")
+                escolhidos.append(prox)
             continue
         post["_links"] = [m.link for m in g["itens"]]
+
+        for rodada_aud in range(tentativas_auditoria + 1):
+            try:
+                auditoria = auditar_materia(
+                    llm, modelo_auditor, post, material,
+                    links_existentes=estado.links(),
+                    eventos_existentes=estado.eventos(),
+                )
+            except Exception as e:
+                auditoria = {
+                    "veredito": "inconclusivo",
+                    "motivo": f"Falha na auditoria: {type(e).__name__}: {e}",
+                    "problemas": [f"Erro técnico no auditor: {e}"],
+                    "semantico": None,
+                }
+                break
+
+            if auditoria["veredito"] == "aprovado" or rodada_aud >= tentativas_auditoria:
+                break
+            if auditoria.get("duplicidade", {}).get("duplicado"):
+                break
+
+            log(f"   ↻ auto-correção ({rodada_aud + 1}/{tentativas_auditoria}): '{post['titulo']}' -> corrigindo {len(auditoria['problemas'])} apontamento(s) do auditor")
+            try:
+                post = reescrever_pos_auditoria(llm, cfg["modelos"]["resumir"], g, material, post, auditoria["problemas"])
+                post["_links"] = [m.link for m in g["itens"]]
+            except Exception as e:
+                log(f"   ! falha ao reescrever {g['evento']}: {e}")
+                break
+
+        post["auditoria"] = auditoria
+        post["veredito"] = auditoria["veredito"]
+        post["problemas"] = auditoria["problemas"]
+        if auditoria["veredito"] == "aprovado":
+            post["status"] = "pronto"
+            marca = "✓ APROVADO (merge automático)"
+        elif auditoria["veredito"] == "inconclusivo":
+            post["status"] = "revisar"
+            marca = "⚠ INCONCLUSIVO (revisão humana: " + "; ".join(post["problemas"][:2]) + ")"
+        else:
+            post["status"] = "reprovado"
+            marca = "✗ REPROVADO (bloqueado: " + "; ".join(post["problemas"][:2]) + ")"
         posts.append(post)
-        marca = "pronto" if post["status"] == "pronto" else "REVISAR: " + "; ".join(post["problemas"])
         log(f"   {post['titulo']} [{marca}]")
+
+        aprovados_ate_agora = sum(1 for p in posts if p["status"] == "pronto")
+        restantes_na_fila = len(escolhidos) - indice
+        if post["status"] != "pronto" and suplentes and (aprovados_ate_agora + restantes_na_fila) < meta_posts:
+            prox = suplentes.pop(0)
+            avulso_tag = " (mais relevante não repetida)" if len(prox["veiculos"]) < cfg.get("min_fontes", 2) else ""
+            log(f"   + acionando pauta suplente da fila: {prox['evento']}{avulso_tag}")
+            escolhidos.append(prox)
 
     log("== publicando" + (" (modo seco: só grava em saida/seco)" if seco else ""))
     publicados = []
     destino_seco = destino_local(cfg["publicacao"], "saida/seco", raiz)
     destino_revisar = destino_local(cfg["publicacao"], "saida/revisar", raiz)
+    destino_reprovado = destino_local(cfg["publicacao"], "saida/reprovados", raiz)
     prontos = [p for p in posts if p["status"] == "pronto"]
     if prontos:
         # o acontecimento mais repetido entre os veículos vira a manchete do site
@@ -73,14 +147,22 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
         publicador.preparar(data)
     try:
         for post in posts:
-            if seco:
-                local = destino_seco.publicar(post, data)
-            elif post["status"] != "pronto":
+            if post["status"] == "revisar":
                 local = destino_revisar.publicar(post, data)
+                if post.get("auditoria"):
+                    caminho_auditoria = Path(local).with_name(f"{Path(local).stem}.auditoria.json")
+                    caminho_auditoria.write_text(json.dumps(post["auditoria"], ensure_ascii=False, indent=2), encoding="utf-8")
+            elif post["status"] == "reprovado":
+                local = destino_reprovado.publicar(post, data)
+                if post.get("auditoria"):
+                    caminho_bloqueio = Path(local).with_name(f"{Path(local).stem}.bloqueio.json")
+                    caminho_bloqueio.write_text(json.dumps(post["auditoria"], ensure_ascii=False, indent=2), encoding="utf-8")
+            elif seco:
+                local = destino_seco.publicar(post, data)
             else:
                 local = publicador.publicar(post, data)
                 estado.registrar(post["evento"], post["_links"], local)
-            publicados.append({"titulo": post["titulo"], "status": post["status"], "destino": local, "problemas": post["problemas"]})
+            publicados.append({"titulo": post["titulo"], "status": post["status"], "veredito": post.get("veredito", post["status"]), "destino": local, "problemas": post["problemas"]})
             log(f"   → {local}")
         resultado_git = publicador.finalizar(data) if publicador else None
     except BaseException:

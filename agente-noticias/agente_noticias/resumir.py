@@ -11,8 +11,11 @@ SISTEMA = """Você é jornalista de economia e escreve em português do Brasil p
 Você recebe o mesmo acontecimento contado por vários sites. Escreva um resumo original que junte o que as fontes dizem.
 
 Fatos:
-- Use apenas informações presentes nos textos fornecidos. Não acrescente contexto, números, datas ou nomes de memória.
-- Copie números exatamente como estão nas fontes; pode trocar ponto decimal por vírgula e traduzir a unidade.
+- Use apenas informações presentes nos textos das fontes fornecidas. Não acrescente contexto, números, datas ou nomes de memória, e NUNCA copie números ou prazos do rótulo "Acontecimento" se eles não aparecerem nos textos das fontes abaixo.
+- Seja estritamente literal e descritivo (estilo agência Reuters/Bloomberg). Não crie relações de causa e efeito, adjetivos qualificativos (ex.: "demanda fraca", "debandada", "escândalo") ou generalizações que as fontes não declarem textualmente.
+- Preserve o escopo exato e as condições das fontes: se um dado, percentual ou projeção vale apenas para uma região, grupo específico ou cenário condicional, explicite essa condição no título, na descrição e no corpo.
+- Inclua no corpo o contexto essencial e as ressalvas importantes mencionadas pelas fontes (ex.: comparações de base, contexto histórico citado, condicionalidades).
+- Copie números exatamente como estão nas fontes; pode trocar ponto decimal por vírgula e traduzir a unidade. Confira com atenção datas e dias da semana (não confunda "ontem" com um dia específico se a fonte não disser).
 - Quando um número ou uma declaração vier de uma fonte só, atribua: "segundo a BBC", "de acordo com a CNBC".
 - Quando as fontes discordarem, diga isso no campo "divergencias".
 - Não especule sobre consequências que as fontes não mencionam.
@@ -99,6 +102,19 @@ def montar_mensagem(grupo, material):
     return "\n".join(blocos)
 
 
+def _anexar_metadados(post, grupo, material, problemas):
+    post["problemas"] = problemas
+    post["status"] = "pronto" if not problemas else "revisar"
+    post["fontes"] = [{"nome": m["fonte"], "titulo": m["titulo"], "link": m["link"]} for m in material]
+    # Imagem da primeira fonte que tiver uma; o crédito vai para essa fonte
+    com_imagem = next((m for m in material if m.get("imagem")), None)
+    post["imagem"] = com_imagem["imagem"] if com_imagem else ""
+    post["credito_imagem"] = com_imagem["fonte"] if com_imagem else ""
+    post["evento"] = grupo["evento"]
+    post["categoria"] = grupo["categoria"]
+    return post
+
+
 def resumir(llm, modelo, grupo, material, tentativas=2):
     mensagem = montar_mensagem(grupo, material)
     problemas = []
@@ -112,13 +128,39 @@ def resumir(llm, modelo, grupo, material, tentativas=2):
         problemas = campos_invalidos(post) + checar(post, material)
         if not problemas:
             break
-    post["problemas"] = problemas
-    post["status"] = "pronto" if not problemas else "revisar"
-    post["fontes"] = [{"nome": m["fonte"], "titulo": m["titulo"], "link": m["link"]} for m in material]
-    # Imagem da primeira fonte que tiver uma; o crédito vai para essa fonte
-    com_imagem = next((m for m in material if m.get("imagem")), None)
-    post["imagem"] = com_imagem["imagem"] if com_imagem else ""
-    post["credito_imagem"] = com_imagem["fonte"] if com_imagem else ""
-    post["evento"] = grupo["evento"]
-    post["categoria"] = grupo["categoria"]
-    return post
+    return _anexar_metadados(post, grupo, material, problemas)
+
+
+def reescrever_pos_auditoria(llm, modelo, grupo, material, post_anterior, problemas_auditoria):
+    """Recebe o parecer do Auditor Independente e solicita ao Redator uma reescrita cirúrgica."""
+    mensagem = montar_mensagem(grupo, material)
+    campos_rascunho = (
+        f"Título: {post_anterior.get('titulo')}\n"
+        f"Descrição: {post_anterior.get('descricao')}\n"
+        f"Chapéu: {post_anterior.get('chapeu')}\n"
+        f"Alcance: {post_anterior.get('alcance')} | Consequência: {post_anterior.get('consequencia')}\n"
+        f"Base da Consequência: {post_anterior.get('base_consequencia')}\n"
+        f"Corpo:\n{post_anterior.get('corpo')}\n"
+        f"Pontos: {post_anterior.get('pontos')}\n"
+        f"Divergências: {post_anterior.get('divergencias')}"
+    )
+    instrucao = (
+        "\n\n=== CORREÇÃO EXIGIDA PELO AUDITOR INDEPENDENTE ===\n"
+        f"Sua versão anterior:\n{campos_rascunho}\n\n"
+        "O Auditor Independente bloqueou ou apontou problemas na versão acima pelos seguintes motivos:\n- "
+        + "\n- ".join(problemas_auditoria)
+        + "\n\nReescreva a notícia corrigindo TODOS os problemas apontados:\n"
+        "1. REMOVA imediatamente qualquer afirmação, adjetivo qualificativo ou relação causal apontada como 'sem confirmação direta' ou 'contradita'.\n"
+        "2. CORRIJA números, percentuais, datas, dias da semana e escopo geográfico/regional para refletir literalmente as fontes.\n"
+        "3. INCLUA no corpo todas as ressalvas e condições importantes que o auditor apontou como omitidas.\n"
+        "4. Se houver divergência entre fontes, explique no campo 'divergencias'.\n"
+        "5. Mantenha todos os números estritamente dentro dos que existem nos textos das fontes (nunca use números apenas do título do acontecimento) e respeite os limites de tamanho: título com no máximo 90 caracteres e descrição entre 70 e 220 caracteres."
+    )
+    post = normalizar(
+        llm.chamar_ferramenta(
+            modelo, SISTEMA, mensagem + instrucao,
+            FERRAMENTA["nome"], FERRAMENTA["descricao"], FERRAMENTA["esquema"],
+        )
+    )
+    problemas = campos_invalidos(post) + checar(post, material)
+    return _anexar_metadados(post, grupo, material, problemas)

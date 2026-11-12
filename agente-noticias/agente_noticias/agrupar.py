@@ -114,21 +114,37 @@ def validar_grupos(brutos, itens):
     return grupos
 
 
-def ranquear(grupos, min_fontes, max_posts, links_publicados):
-    candidatos, descartados = [], []
+def ranquear(grupos, min_fontes, max_posts, links_publicados, permitir_avulsas=False):
+    repetidos, avulsos, descartados = [], [], []
     for g in grupos:
         links = {m.link for m in g["itens"]}
-        sobreposicao = len(links & links_publicados) / len(links)
+        sobreposicao = len(links & links_publicados) / len(links) if links else 0
         if g["alcance_economico"] not in ALCANCES_PUBLICAVEIS:
             descartados.append((g["evento"], f"alcance {g['alcance_economico']}"))
         elif g["repete_publicado"] or sobreposicao >= 0.5:
             descartados.append((g["evento"], "já publicado"))
-        elif len(g["veiculos"]) < min_fontes:
-            descartados.append((g["evento"], f"{len(g['veiculos'])} veículo(s), mínimo {min_fontes}"))
+        elif len(g["veiculos"]) >= min_fontes:
+            repetidos.append(g)
         else:
-            candidatos.append(g)
-    candidatos.sort(key=lambda g: (len(g["veiculos"]), g["relevancia"], g["mais_recente"]), reverse=True)
-    return candidatos[:max_posts], descartados
+            if permitir_avulsas:
+                avulsos.append(g)
+            else:
+                descartados.append((g["evento"], f"{len(g['veiculos'])} veículo(s), mínimo {min_fontes}"))
+
+    repetidos.sort(key=lambda g: (len(g["veiculos"]), g["relevancia"], g["mais_recente"]), reverse=True)
+    escolhidos = repetidos[:max_posts]
+    for g in repetidos[max_posts:]:
+        descartados.append((g["evento"], "excedeu o limite de posts"))
+
+    if permitir_avulsas and len(escolhidos) < max_posts:
+        faltam = max_posts - len(escolhidos)
+        avulsos.sort(key=lambda g: (g["relevancia"], g["mais_recente"]), reverse=True)
+        escolhidos_avulsos = avulsos[:faltam]
+        escolhidos.extend(escolhidos_avulsos)
+        for g in avulsos[faltam:]:
+            descartados.append((g["evento"], f"{len(g['veiculos'])} veículo(s), avulso não selecionado"))
+
+    return escolhidos, descartados
 
 
 def agrupar(llm, modelo, itens, eventos_publicados, max_itens=400):
