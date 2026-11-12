@@ -21,8 +21,8 @@ export function ConsequenceBadge({ noticia }: { noticia: Pick<Noticia, "conseque
 export function CountryChips({ paises, limite }: { paises: string[]; limite?: number }) {
   return (
     <>
-      {paises.slice(0, limite ?? paises.length).map((p) => (
-        <span key={p} className="country-chip">
+      {paises.slice(0, limite ?? paises.length).map((p, i) => (
+        <span key={i} className="country-chip">
           {p}
         </span>
       ))}

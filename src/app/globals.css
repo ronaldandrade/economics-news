@@ -1088,15 +1088,6 @@ a.modal-close-btn {
   color: var(--text-primary);
 }
 
-.severity-badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.18rem 0.55rem;
-  border-radius: 4px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-}
-
 .impact-briefing__affected {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // O endereço é montado no clique a partir de window.location, assim o link vale
 // para qualquer domínio (preview da Vercel, domínio próprio, localhost).
@@ -38,10 +38,15 @@ async function copiarTexto(texto: string) {
 
 export function ShareBar({ titulo, caminho }: { titulo: string; caminho: string }) {
   const [aviso, setAviso] = useState("");
+  const temporizador = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => () => clearTimeout(temporizador.current), []);
 
   function avisar(texto: string) {
     setAviso(texto);
-    setTimeout(() => setAviso(""), 2500);
+    // Sem cancelar o anterior, um segundo clique teria o aviso apagado cedo pelo temporizador do primeiro
+    clearTimeout(temporizador.current);
+    temporizador.current = setTimeout(() => setAviso(""), 2500);
   }
 
   async function copiar() {

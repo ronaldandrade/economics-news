@@ -118,8 +118,8 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                   <div className="impact-briefing__why">
                     <h3>Por que este evento importa:</h3>
                     <ul>
-                      {noticia.keyPoints.map((p) => (
-                        <li key={p}>{p}</li>
+                      {noticia.keyPoints.map((p, i) => (
+                        <li key={i}>{p}</li>
                       ))}
                     </ul>
                   </div>
@@ -130,8 +130,8 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
                 <div className="modal-article__source">
                   <p>Fontes:</p>
                   <ul>
-                    {noticia.sources.map((f) => (
-                      <li key={f.url}>
+                    {noticia.sources.map((f, i) => (
+                      <li key={i}>
                         {f.name}:{" "}
                         <a href={f.url} target="_blank" rel="noopener noreferrer">
                           {f.title}
@@ -150,8 +150,8 @@ export default async function PaginaNoticia({ params }: { params: Promise<{ slug
               )}
 
               <div className="modal-article__body">
-                {noticia.body.map((p) => (
-                  <p key={p}>{p}</p>
+                {noticia.body.map((p, i) => (
+                  <p key={i}>{p}</p>
                 ))}
               </div>
               {noticia.generatedByAI && (

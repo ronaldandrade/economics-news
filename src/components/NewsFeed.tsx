@@ -3,25 +3,47 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CATEGORIAS, ESCOPOS, ROTULO_ESCOPO, escopoDaUrl, type Escopo, type Noticia } from "@/lib/tipos";
+import { CATEGORIAS, ESCOPOS, ROTULO_ESCOPO, escopoDaUrl, normalizarBusca, type Escopo, type Noticia } from "@/lib/tipos";
 import { ConsequenceBadge, CountryChips, ImpactBadge, Masthead } from "./Editorial";
 import { NewsImage } from "./NewsImage";
 
 type FiltroImpacto = "all" | Escopo;
 export type NoticiaResumo = Omit<Noticia, "keyPoints" | "body"> & { dataFormatada: string; textoBusca: string };
 
-/** Lê ?impacto= da URL (links do rodapé). Fica num Suspense para a home continuar estática. */
+/**
+ * O filtro de impacto mora em ?impacto= (links do rodapé e botões do topo usam o mesmo lugar),
+ * então a URL sempre bate com o que está na tela. Fica num Suspense para a home continuar estática.
+ */
 export function NewsFeedComParametros({ noticias }: { noticias: NoticiaResumo[] }) {
-  const impacto = escopoDaUrl(useSearchParams().get("impacto"));
-  return <NewsFeed key={impacto} noticias={noticias} impactoInicial={impacto} />;
+  const parametros = useSearchParams();
+  const impacto = escopoDaUrl(parametros.get("impacto"));
+
+  function mudarImpacto(valor: FiltroImpacto) {
+    const novos = new URLSearchParams(parametros.toString());
+    if (valor === "all") novos.delete("impacto");
+    else novos.set("impacto", valor);
+    const consulta = novos.toString();
+    // replaceState é integrado ao roteador do Next: useSearchParams acompanha sem recarregar a página
+    window.history.replaceState(null, "", consulta ? `?${consulta}` : window.location.pathname);
+  }
+
+  return <NewsFeed noticias={noticias} impacto={impacto} aoMudarImpacto={mudarImpacto} />;
 }
 
-export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: NoticiaResumo[]; impactoInicial?: FiltroImpacto }) {
-  const [impacto, setImpacto] = useState<FiltroImpacto>(impactoInicial);
+export function NewsFeed({
+  noticias,
+  impacto = "all",
+  aoMudarImpacto,
+}: {
+  noticias: NoticiaResumo[];
+  impacto?: FiltroImpacto;
+  /** Ausente só no HTML estático de reserva, antes de o navegador assumir a página. */
+  aoMudarImpacto?: (valor: FiltroImpacto) => void;
+}) {
   const [categoria, setCategoria] = useState<string>("all");
   const [busca, setBusca] = useState("");
 
-  const termo = busca.trim().toLowerCase();
+  const termo = normalizarBusca(busca.trim());
   const filtradas = useMemo(
     () =>
       noticias.filter(
@@ -36,7 +58,7 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
   const visaoPadrao = impacto === "all" && categoria === "all" && !termo;
 
   function limpar() {
-    setImpacto("all");
+    aoMudarImpacto?.("all");
     setCategoria("all");
     setBusca("");
   }
@@ -70,7 +92,7 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
 
   const manchete = visaoPadrao ? filtradas.find((n) => n.featured) ?? filtradas[0] : undefined;
   const grade = manchete ? filtradas.filter((n) => n.slug !== manchete.slug) : filtradas;
-  const radar = noticias.filter((n) => n.impactScope === "internacional").slice(0, 5);
+  const radar = useMemo(() => noticias.filter((n) => n.impactScope === "internacional").slice(0, 5), [noticias]);
 
   let tituloFeed = "Panorama Internacional & Desdobramentos";
   if (!visaoPadrao) {
@@ -97,7 +119,7 @@ export function NewsFeed({ noticias, impactoInicial = "all" }: { noticias: Notic
                   type="button"
                   className={`impact-pill${impacto === p.valor ? " active" : ""}`}
                   aria-pressed={impacto === p.valor}
-                  onClick={() => setImpacto(p.valor)}
+                  onClick={() => aoMudarImpacto?.(p.valor)}
                 >
                   {p.indicador && <span className={`pill-indicator ${p.indicador}`}></span>}
                   {p.rotulo}

@@ -46,6 +46,14 @@ export function escopoDaUrl(valor: string | null): Escopo | "all" {
   return (ESCOPOS as readonly string[]).includes(valor ?? "") ? (valor as Escopo) : "all";
 }
 
+/** Minúsculas e sem acento, para a busca achar "petróleo" quando o leitor digita "petroleo". */
+export function normalizarBusca(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 export interface Noticia {
   slug: string;
   date: string;

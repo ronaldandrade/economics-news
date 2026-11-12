@@ -4,13 +4,7 @@ import { useState } from "react";
 import type { Escopo } from "@/lib/tipos";
 
 // SVG editorial de reserva quando a imagem da fonte não carrega
-function fallbackSvg(scope: Escopo) {
-  const cores: Record<Escopo, [string, string, string]> = {
-    global: ["#2b131d", "#e11d48", "IMPACTO GLOBAL"],
-    internacional: ["#102a2e", "#14b8a6", "IMPACTO ENTRE PAÍSES"],
-    nacional: ["#1f1c19", "#a8998a", "IMPACTO NACIONAL"],
-  };
-  const [bg, accent, label] = cores[scope];
+function fallbackSvg(bg: string, accent: string, label: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
     <rect width="800" height="500" fill="${bg}"/>
     <g stroke="${accent}" stroke-opacity="0.22" stroke-width="1">
@@ -24,17 +18,34 @@ function fallbackSvg(scope: Escopo) {
   return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
 
+// Montados uma vez só, não a cada cartão renderizado
+const RESERVA: Record<Escopo, string> = {
+  global: fallbackSvg("#2b131d", "#e11d48", "IMPACTO GLOBAL"),
+  internacional: fallbackSvg("#102a2e", "#14b8a6", "IMPACTO ENTRE PAÍSES"),
+  nacional: fallbackSvg("#1f1c19", "#a8998a", "IMPACTO NACIONAL"),
+};
+
 export function NewsImage({ src, alt, scope, lazy = true }: { src?: string; alt: string; scope: Escopo; lazy?: boolean }) {
-  const [falhou, setFalhou] = useState(false);
+  // Guarda qual endereço falhou, para uma imagem nova no mesmo lugar ganhar outra chance
+  const [falhou, setFalhou] = useState<string | null>(null);
+  const usarReserva = !src || falhou === src;
+
+  // A imagem do HTML estático pode falhar antes de o React ligar o onError; nesse caso o evento
+  // já passou e o leitor ficaria com o ícone de imagem quebrada. Aqui o estado final é conferido.
+  function conferir(img: HTMLImageElement | null) {
+    if (img && src && !usarReserva && img.complete && img.naturalWidth === 0) setFalhou(src);
+  }
+
   // Imagens vêm de vários domínios das fontes, então não passam pelo next/image.
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={falhou || !src ? fallbackSvg(scope) : src}
+      ref={conferir}
+      src={usarReserva ? RESERVA[scope] : src}
       alt={alt}
       loading={lazy ? "lazy" : "eager"}
       referrerPolicy="no-referrer"
-      onError={() => setFalhou(true)}
+      onError={() => src && setFalhou(src)}
     />
   );
 }

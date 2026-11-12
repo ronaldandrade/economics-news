@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const fontes = [...new Set(todasNoticias().map((n) => n.source.split(" / ")[0]))];
+  const fontes = [...new Set(todasNoticias().flatMap((n) => n.source.split(" / ")))];
   return (
     // data-theme é trocado pelo script abaixo antes da primeira pintura
     <html lang="pt-BR" data-theme="light" className={`${inter.variable} ${newsreader.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
