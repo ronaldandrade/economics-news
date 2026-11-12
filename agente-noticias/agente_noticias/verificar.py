@@ -1,7 +1,10 @@
 import re
 from datetime import datetime
 
-NUMERO = re.compile(r"(?<![\w.,])\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d+)?|\d+(?:[.,]\d+)?")
+# A primeira alternativa pega números com separador de milhar ("1.200", "10 000,5") e precisa de pelo
+# menos um grupo de três dígitos; sem isso ela cortava "1508" em "150" + "8" e o número inventado
+# passava na conferência porque "150" (de "1500") estava nas fontes.
+NUMERO = re.compile(r"(?<![\w.,])\d{1,3}(?:[.,\s]\d{3})+(?:[.,]\d+)?(?!\d)|\d+(?:[.,]\d+)?")
 
 PADROES_DE_IA = [
     (re.compile(r"—|–(?!\d)|(?<!\d)–"), "travessão"),

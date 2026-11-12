@@ -73,13 +73,22 @@ def montar_mensagem(itens, eventos_publicados):
     return f"Eventos já publicados nos últimos dias:\n{publicados}\n\nManchetes:\n" + "\n".join(linhas)
 
 
+def _relevancia(valor):
+    try:
+        return min(5, max(1, int(valor)))
+    except (TypeError, ValueError):
+        return 1
+
+
 def validar_grupos(brutos, itens):
     por_id = {i.id: i for i in itens}
     usados, grupos = set(), []
-    for g in brutos:
+    for g in brutos if isinstance(brutos, list) else []:
+        if not isinstance(g, dict):
+            continue
         ids = []
-        for i in g.get("itens", []):
-            if isinstance(i, int) and i in por_id and i not in usados:
+        for i in g.get("itens") or []:
+            if isinstance(i, int) and not isinstance(i, bool) and i in por_id and i not in usados:
                 ids.append(i)
                 usados.add(i)
         if not ids:
@@ -92,7 +101,7 @@ def validar_grupos(brutos, itens):
         grupos.append({
             "evento": str(g.get("evento", "")).strip(),
             "categoria": g.get("categoria", ""),
-            "relevancia": int(g.get("relevancia", 1)),
+            "relevancia": _relevancia(g.get("relevancia")),
             "repete_publicado": bool(g.get("repete_publicado", False)),
             # sem classificação, o grupo não passa no filtro de alcance
             "alcance_economico": g.get("alcance_economico", "nao_informado"),

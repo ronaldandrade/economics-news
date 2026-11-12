@@ -204,12 +204,15 @@ def test_mdx_valida_no_padrao_do_blog(tmp_path):
     assert gerar_slug("Banco central da Exemplândia sobe juros para 4,5% e surpreende o mercado", "_") == "banco_central_da_exemplandia_sobe_juros_para_4_5_e"
 
 
-def test_extrai_texto_do_artigo_com_trafilatura(tmp_path):
+def test_extrai_texto_do_artigo_com_trafilatura(tmp_path, monkeypatch):
     from agente_noticias.extrair import texto_do_artigo
     pagina = tmp_path / "artigo.html"
     paragrafo = "The central bank of Exampleland raised its key interest rate to 4.5 percent on Monday. " * 6
     pagina.write_text(f"<html><head><title>x</title></head><body><nav>Menu Home Sports</nav><article><h1>Rates up</h1><p>{paragrafo}</p><p>{paragrafo}</p></article><footer>Cookies</footer></body></html>")
-    texto = texto_do_artigo(str(pagina))
+    # link de feed só pode ser http(s); o teste entrega a página pelo mesmo caminho de um download
+    from agente_noticias import extrair
+    monkeypatch.setattr(extrair, "baixar", lambda url, timeout=20: pagina.read_bytes())
+    texto = texto_do_artigo("https://site.test/artigo")
     assert "4.5 percent" in texto and "Cookies" not in texto
 
 
@@ -379,3 +382,106 @@ def test_consequencia_critica_exige_evidencia_com_numeros_das_fontes():
     n = noticia_para_site(dict(ok, fontes=[{"nome": "A", "titulo": "t", "link": "https://a.test"}]), "2026-10-27", "juros")
     assert n["consequence"] == "critica" and n["consequenceBasis"].startswith("Juros a 4,5%")
     assert n["impactScope"] == "internacional" and "corridorTag" in n
+
+
+def test_numero_inventado_nao_passa_por_ter_prefixo_igual_ao_da_fonte():
+    fontes = ["1500 jobs in 2026 and 12,345 firms"]
+    assert numeros_sem_fonte("Foram 1508 vagas e 12.346 empresas.", fontes, 2026) == ["12.346", "1508"]
+    assert numeros_sem_fonte("Foram 1500 vagas e 12.345 empresas em 2026.", fontes, 2026) == []
+
+
+def test_link_de_feed_nao_le_arquivo_local(tmp_path):
+    from agente_noticias.coletar import baixar
+    from agente_noticias.extrair import ler_artigo
+    segredo = tmp_path / "segredo.txt"
+    segredo.write_text("chave")
+    for url in (str(segredo), f"file://{segredo}", "ftp://x.test/a"):
+        with pytest.raises(ValueError):
+            baixar(url)
+        assert ler_artigo(url) == ("", "")
+    assert baixar(str(segredo), local=True) == b"chave"
+
+
+def test_largura_de_imagem_invalida_nao_derruba_a_coleta():
+    from agente_noticias.coletar import imagem_da_entrada
+    entrada = {"media_content": [{"url": "https://a.test/p.jpg", "width": "100px"}, {"url": "https://a.test/g.jpg", "width": "1200"}],
+               "media_thumbnail": [{"url": "https://a.test/t.jpg", "width": "auto"}]}
+    assert imagem_da_entrada(entrada) == "https://a.test/g.jpg"
+
+
+def test_resposta_cortada_em_max_tokens_vira_erro():
+    cortada = SimpleNamespace(stop_reason="max_tokens", usage=SimpleNamespace(input_tokens=10, output_tokens=5),
+                              content=[SimpleNamespace(type="tool_use", name="f", input={})])
+    llm = ClienteLLM(cliente=SimpleNamespace(messages=SimpleNamespace(create=lambda **kw: cortada)), max_tokens=5)
+    with pytest.raises(RuntimeError, match="max_tokens"):
+        llm.chamar_ferramenta("m", "s", "msg", "f", "d", {})
+    assert llm.uso["m"]["saida"] == 5
+
+
+def test_grupos_com_campos_malformados_nao_quebram():
+    itens, _ = coletar(FONTES, 24, agora=AGORA, log=lambda *_: None)
+    grupos = validar_grupos(["lixo", {"evento": "x", "itens": [0, True, "1"], "relevancia": "alta", "alcance_economico": "global"}, {"itens": None}], itens)
+    assert len(grupos) == 1 and grupos[0]["relevancia"] == 1 and len(grupos[0]["itens"]) == 1
+    assert validar_grupos("texto", itens) == []
+
+
+def test_resumo_sem_campos_vai_para_revisar_em_vez_de_quebrar(tmp_path):
+    incompleto = {k: v for k, v in RESUMO_BOM.items() if k not in ("local", "pontos")}
+    incompleto["editoria"] = "Esportes"
+    cfg = cfg_base()
+    cfg["publicacao"] = {"tipo": "site_json", "repositorio": str(tmp_path / "nao-usado"), "git": "pr"}
+    llm, falso = cliente([incompleto, incompleto])
+    rel = executar(cfg, FONTES, llm, tmp_path, log=lambda *_: None, agora=AGORA)
+    assert rel["posts"][0]["status"] == "revisar"
+    problemas = " ".join(rel["posts"][0]["problemas"])
+    assert '"local" vazio' in problemas and '"pontos" vazio' in problemas and '"editoria"' in problemas
+    assert list((tmp_path / "saida/revisar").glob("*.json"))
+
+
+def test_noticia_para_site_so_emite_https():
+    post = dict(RESUMO_BOM, imagem="http://cdn.test/a.jpg", credito_imagem="Fonte A",
+                fontes=[{"nome": "Fonte A", "titulo": "t", "link": "http://a.test/1"}])
+    n = noticia_para_site(post, "2026-10-26", "x")
+    assert n["sourceUrl"] == "https://a.test/1" and n["sources"][0]["url"] == "https://a.test/1"
+    assert n["image"] == "https://cdn.test/a.jpg"
+    sem = noticia_para_site(dict(post, imagem="data:image/png;base64,AAAA"), "2026-10-26", "x")
+    assert sem["image"] == "" and sem["imageCaption"] == ""
+
+
+def test_falha_ao_publicar_devolve_o_repositorio_limpo(tmp_path):
+    remoto, repo = tmp_path / "remoto.git", tmp_path / "site"
+    preparar_repo_com_remoto(tmp_path, remoto, repo)
+    # hook que recusa o commit: a falha acontece depois de os arquivos estarem escritos e no índice
+    hook = repo / ".git/hooks/pre-commit"
+    hook.write_text("#!/bin/sh\nexit 1\n")
+    hook.chmod(0o755)
+    cfg = cfg_base()
+    cfg["publicacao"] = {"tipo": "site_json", "repositorio": str(repo), "git": "pr"}
+    llm, _ = cliente([RESUMO_BOM])
+    with pytest.raises(RuntimeError, match="commit"):
+        executar(cfg, FONTES, llm, tmp_path / "agente", log=lambda *_: None, agora=AGORA)
+    assert subprocess.run(["git", "-C", str(repo), "branch", "--show-current"], capture_output=True, text=True).stdout.strip() == "main"
+    assert subprocess.run(["git", "-C", str(repo), "status", "--porcelain"], capture_output=True, text=True).stdout == ""
+    assert not (tmp_path / "agente/dados/estado.json").exists()
+
+
+def test_pr_que_nao_abre_nao_perde_o_estado(tmp_path):
+    remoto, repo = tmp_path / "remoto.git", tmp_path / "site"
+    preparar_repo_com_remoto(tmp_path, remoto, repo)
+    (tmp_path / "bin" / "gh").write_text('#!/bin/bash\n[ "$1 $2" = "pr create" ] && { echo "sem login" >&2; exit 1; }\nexit 0\n')
+    cfg = cfg_base()
+    cfg["publicacao"] = {"tipo": "site_json", "repositorio": str(repo), "git": "pr"}
+    llm, _ = cliente([RESUMO_BOM])
+    rel = executar(cfg, FONTES, llm, tmp_path / "agente", log=lambda *_: None, agora=AGORA)
+    assert rel["git"]["url"] is None and "sem login" in rel["git"]["erro"]
+    assert "noticias/" in subprocess.run(["git", "-C", str(remoto), "branch"], capture_output=True, text=True).stdout
+    # o evento ficou registrado: a rodada seguinte não publica de novo
+    llm2, _ = cliente([RESUMO_BOM])
+    rel2 = executar(cfg, FONTES, llm2, tmp_path / "agente", log=lambda *_: None, agora=AGORA)
+    assert rel2["posts"] == []
+
+
+def test_resumo_que_falha_nao_derruba_os_outros(tmp_path):
+    llm, _ = cliente([])  # sem resposta para o resumo: a chamada levanta IndexError
+    rel = executar(cfg_base(), FONTES, llm, tmp_path, seco=True, log=lambda *_: None, agora=AGORA)
+    assert rel["posts"] == [] and len(rel["falhas"]) == 1 and "IndexError" in rel["falhas"][0]["erro"]

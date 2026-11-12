@@ -1,6 +1,6 @@
 from .verificar import checar
 
-# Mesmas editorias de src/lib/tipos.ts do site
+# Mesmas editorias (CATEGORIAS) de src/lib/tipos.ts do site
 # Mesmos valores de ESCOPOS e CONSEQUENCIAS em src/lib/tipos.ts
 ALCANCES = ["global", "internacional", "nacional"]
 CONSEQUENCIAS = ["acompanhamento", "relevante", "critica"]
@@ -60,6 +60,37 @@ FERRAMENTA = {
 }
 
 
+TEXTOS = ("titulo", "descricao", "corpo", "divergencias", "base_consequencia", "chapeu", "local")
+TEXTOS_OBRIGATORIOS = ("titulo", "descricao", "corpo", "chapeu", "local")
+LISTAS = ("pontos", "tags", "paises")
+LISTAS_OBRIGATORIAS = ("pontos", "paises")
+ENUMS = {"alcance": ALCANCES, "consequencia": CONSEQUENCIAS, "editoria": EDITORIAS}
+
+
+def normalizar(post):
+    """Garante o tipo de cada campo: o esquema da ferramenta orienta o modelo, mas não é uma garantia.
+    Um campo ausente ou de tipo errado vira vazio aqui e é apontado por campos_invalidos, em vez de
+    derrubar a rodada com KeyError na hora de publicar."""
+    post = dict(post) if isinstance(post, dict) else {}
+    for campo in TEXTOS:
+        post[campo] = post[campo].strip() if isinstance(post.get(campo), str) else ""
+    for campo in LISTAS:
+        valor = post.get(campo)
+        post[campo] = [v.strip() for v in valor if isinstance(v, str) and v.strip()] if isinstance(valor, list) else []
+    for campo in ENUMS:
+        if not isinstance(post.get(campo), str):
+            post[campo] = ""
+    return post
+
+
+def campos_invalidos(post):
+    problemas = [f'campo "{c}" vazio' for c in TEXTOS_OBRIGATORIOS + LISTAS_OBRIGATORIAS if not post[c]]
+    for campo, validos in ENUMS.items():
+        if post[campo] not in validos:
+            problemas.append(f'campo "{campo}" deve ser um destes: {", ".join(validos)}')
+    return problemas
+
+
 def montar_mensagem(grupo, material):
     blocos = [f"Acontecimento: {grupo['evento']}\n"]
     for m in material:
@@ -77,8 +108,8 @@ def resumir(llm, modelo, grupo, material, tentativas=2):
             mensagem_atual = mensagem + "\n\nSua versão anterior tinha estes problemas. Reescreva corrigindo todos:\n- " + "\n- ".join(problemas)
         else:
             mensagem_atual = mensagem
-        post = llm.chamar_ferramenta(modelo, SISTEMA, mensagem_atual, FERRAMENTA["nome"], FERRAMENTA["descricao"], FERRAMENTA["esquema"])
-        problemas = checar(post, material)
+        post = normalizar(llm.chamar_ferramenta(modelo, SISTEMA, mensagem_atual, FERRAMENTA["nome"], FERRAMENTA["descricao"], FERRAMENTA["esquema"]))
+        problemas = campos_invalidos(post) + checar(post, material)
         if not problemas:
             break
     post["problemas"] = problemas

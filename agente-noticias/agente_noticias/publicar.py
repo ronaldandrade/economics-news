@@ -37,7 +37,12 @@ def renderizar_mdx(post, data, extra=None, aviso_ia=True):
     }
     frontmatter.update(extra or {})
     linhas = ["---"] + [f"{chave}: {yaml_valor(valor)}" for chave, valor in frontmatter.items()] + ["---", ""]
-    linhas.append(post["corpo"].strip())
+    return "\n".join(linhas) + "\n" + renderizar_corpo(post, aviso_ia)
+
+
+def renderizar_corpo(post, aviso_ia=True):
+    """O Markdown do post sem o frontmatter."""
+    linhas = [post["corpo"].strip()]
     linhas += ["", "## Em resumo", ""] + [f"- {p.strip()}" for p in post["pontos"]]
     if post.get("divergencias", "").strip():
         linhas += ["", "## Onde as fontes divergem", "", post["divergencias"].strip()]
@@ -77,6 +82,9 @@ class PublicadorArquivo:
         self.branch_base = cfg.get("branch_base", "main")
         self.remoto = cfg.get("remoto", "origin")
         self.escritos = []
+        self.branch = None
+        self.branch_original = None
+        self.commitado = False
 
     def preparar(self, data):
         if self.git_modo == "pr":
@@ -106,8 +114,12 @@ class PublicadorArquivo:
             self.branch = branch
 
     def _pr_aberto(self, branch):
-        r = subprocess.run(["gh", "pr", "list", "--head", branch, "--state", "open", "--json", "url", "-q", ".[0].url"],
-                           cwd=self.repo, capture_output=True, text=True)
+        try:
+            r = subprocess.run(["gh", "pr", "list", "--head", branch, "--state", "open", "--json", "url", "-q", ".[0].url"],
+                               cwd=self.repo, capture_output=True, text=True)
+        except OSError:
+            # gh não instalado: sem como consultar, trata como "sem PR aberto"
+            return None
         url = r.stdout.strip()
         return url if r.returncode == 0 and url else None
 
@@ -124,8 +136,25 @@ class PublicadorArquivo:
         return str(caminho)
 
     def _voltar_branch(self):
-        if getattr(self, "branch_original", None) and self.branch_original != "HEAD":
+        if self.branch_original and self.branch_original != "HEAD":
             git(self.repo, "switch", self.branch_original)
+
+    def cancelar(self):
+        """Chamado quando a rodada falha no meio da publicação. Sem isto o repositório do site ficava
+        parado na branch do agente, com os JSON novos soltos na pasta, e a rodada seguinte (que não
+        tem o evento no estado) escrevia tudo de novo ao lado deles."""
+        if self.git_modo == "nenhum":
+            return
+        try:
+            if not self.commitado:
+                for caminho, _ in self.escritos:
+                    subprocess.run(["git", "-C", str(self.repo), "reset", "-q", "--", str(caminho)], capture_output=True)
+                    caminho.unlink(missing_ok=True)
+            if self.git_modo == "pr":
+                self._voltar_branch()
+        except (OSError, RuntimeError):
+            # a limpeza é o melhor possível; o erro que importa é o que causou o cancelamento
+            pass
 
     def finalizar(self, data):
         if self.git_modo == "nenhum" or not self.escritos:
@@ -135,6 +164,7 @@ class PublicadorArquivo:
         corpo = "\n".join(f"- {titulo}" for _, titulo in self.escritos)
         mensagem = f"docs(noticias): adiciona resumos de economia de {data}\n\nResumos gerados pelo agente de notícias:\n{corpo}\n"
         git(self.repo, "commit", "-m", mensagem)
+        self.commitado = True
         if self.git_modo == "commit":
             git(self.repo, "push", self.remoto, "HEAD")
             return {"modo": "commit", "commit": git(self.repo, "rev-parse", "--short", "HEAD")}
@@ -144,19 +174,34 @@ class PublicadorArquivo:
         existente = self._pr_aberto(self.branch)
         if existente:
             return {"modo": "pr", "url": existente}
-        criado = subprocess.run(
-            ["gh", "pr", "create", "--base", self.branch_base, "--head", self.branch,
-             "--title", f"Notícias de economia: {data}",
-             "--body", f"Resumos gerados pelo agente de notícias.\n\n{corpo}\n\nConfira o preview antes do merge."],
-            cwd=self.repo, capture_output=True, text=True,
-        )
-        if criado.returncode != 0:
-            raise RuntimeError(f"gh pr create falhou: {criado.stderr.strip()}")
+        try:
+            criado = subprocess.run(
+                ["gh", "pr", "create", "--base", self.branch_base, "--head", self.branch,
+                 "--title", f"Notícias de economia: {data}",
+                 "--body", f"Resumos gerados pelo agente de notícias.\n\n{corpo}\n\nConfira o preview antes do merge."],
+                cwd=self.repo, capture_output=True, text=True,
+            )
+            erro = "" if criado.returncode == 0 else (criado.stderr.strip() or "gh pr create falhou")
+        except OSError as e:
+            erro = f"gh não executou: {e}"
+        if erro:
+            # A branch já está no GitHub. Devolver o erro em vez de levantar exceção deixa o estado ser
+            # salvo; do contrário a próxima rodada publicaria as mesmas notícias outra vez.
+            return {"modo": "pr", "url": None, "branch": self.branch,
+                    "erro": f"a branch {self.branch} foi enviada, mas o PR não foi aberto ({erro}); abra o PR à mão"}
         return {"modo": "pr", "url": criado.stdout.strip()}
 
 
 def juntar_nomes(nomes):
     return nomes[0] if len(nomes) == 1 else ", ".join(nomes[:-1]) + " e " + nomes[-1]
+
+
+def so_https(url):
+    """O site só aceita https em links e imagens (src/lib/noticias.ts); um http:// de feed quebraria o build."""
+    url = (url or "").strip()
+    if url.lower().startswith("http://"):
+        url = "https://" + url[7:]
+    return url if url.lower().startswith("https://") else ""
 
 
 def noticia_para_site(post, data, slug):
@@ -168,6 +213,7 @@ def noticia_para_site(post, data, slug):
     alcance = post.get("alcance", "nacional")
     fontes = post["fontes"]
     nomes = [f["nome"] for f in fontes]
+    imagem = so_https(post.get("imagem"))
     noticia = {
         "slug": slug,
         "date": data,
@@ -182,11 +228,11 @@ def noticia_para_site(post, data, slug):
         "location": post.get("local", ""),
         "readTime": f"{tempo_de_leitura(post['corpo'])} min de leitura",
         "affectedCountries": paises,
-        "image": post.get("imagem", ""),
-        "imageCaption": f"Foto: {post['credito_imagem']}." if post.get("credito_imagem") else "",
+        "image": imagem,
+        "imageCaption": f"Foto: {post['credito_imagem']}." if imagem and post.get("credito_imagem") else "",
         "source": " / ".join(nomes),
-        "sourceUrl": fontes[0]["link"],
-        "sources": [{"name": f["nome"], "title": f["titulo"], "url": f["link"]} for f in fontes],
+        "sourceUrl": so_https(fontes[0]["link"]),
+        "sources": [{"name": f["nome"], "title": f["titulo"], "url": so_https(f["link"])} for f in fontes],
         "keyPoints": post["pontos"],
         "body": paragrafos,
         "generatedByAI": True,
@@ -205,9 +251,14 @@ class PublicadorSiteJSON(PublicadorArquivo):
 
     def __init__(self, cfg, raiz_agente):
         super().__init__({"pasta": "content/noticias", **cfg, "separador_slug": "-"}, raiz_agente)
+        self._slugs = None
 
     def _slugs_existentes(self):
-        slugs = set()
+        """Slugs já usados na pasta. Lidos uma vez por rodada (depois do preparar, já na branch certa),
+        em vez de reabrir todos os JSON do site a cada post."""
+        if self._slugs is not None:
+            return self._slugs
+        slugs = self._slugs = set()
         for arquivo in self.pasta.glob("*.json"):
             try:
                 slugs.add(json.loads(arquivo.read_text(encoding="utf-8")).get("slug"))
@@ -222,6 +273,7 @@ class PublicadorSiteJSON(PublicadorArquivo):
         slug, n = base, 2
         while slug in existentes:
             slug, n = f"{base}-{n}", n + 1
+        existentes.add(slug)
         caminho = self.pasta / f"{data}_{slug}.json"
         noticia = noticia_para_site(post, data, slug)
         caminho.write_text(json.dumps(noticia, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -241,7 +293,7 @@ class PublicadorHTTP:
 
     def publicar(self, post, data):
         corpo = {
-            "titulo": post["titulo"], "descricao": post["descricao"], "conteudo_markdown": renderizar_mdx(post, data, aviso_ia=True).split("---", 2)[2].strip(),
+            "titulo": post["titulo"], "descricao": post["descricao"], "conteudo_markdown": renderizar_corpo(post).strip(),
             "pontos": post["pontos"], "tags": post["tags"], "fontes": post["fontes"], "data": data, "categoria": post.get("categoria"),
         }
         pedido = urllib.request.Request(
@@ -253,6 +305,9 @@ class PublicadorHTTP:
 
     def finalizar(self, data):
         return None
+
+    def cancelar(self):
+        pass
 
 
 def criar_publicador(cfg, raiz_agente):

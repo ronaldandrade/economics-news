@@ -10,12 +10,15 @@ class Estado:
         try:
             self.dados = json.loads(self.caminho.read_text(encoding="utf-8"))
         except (OSError, ValueError):
+            self.dados = {}
+        # arquivo com JSON válido mas em outro formato (edição à mão) também recomeça do zero
+        if not isinstance(self.dados, dict) or not isinstance(self.dados.get("publicados"), list):
             self.dados = {"publicados": []}
         self._expirar()
 
     def _expirar(self):
         limite = (datetime.now(timezone.utc) - timedelta(days=self.dias_memoria)).isoformat()
-        self.dados["publicados"] = [p for p in self.dados["publicados"] if p.get("em", "") >= limite]
+        self.dados["publicados"] = [p for p in self.dados["publicados"] if isinstance(p, dict) and p.get("evento") and p.get("em", "") >= limite]
 
     def eventos(self):
         return [p["evento"] for p in self.dados["publicados"]]

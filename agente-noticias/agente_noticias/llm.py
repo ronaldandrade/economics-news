@@ -2,7 +2,7 @@ from collections import defaultdict
 
 
 class ClienteLLM:
-    def __init__(self, cliente=None, max_tokens=4096, precos=None):
+    def __init__(self, cliente=None, max_tokens=16000, precos=None):
         if cliente is None:
             import anthropic
 
@@ -27,6 +27,13 @@ class ClienteLLM:
         if uso is not None:
             registro["entrada"] += getattr(uso, "input_tokens", 0) or 0
             registro["saida"] += getattr(uso, "output_tokens", 0) or 0
+        # Resposta cortada vem com a ferramenta pela metade ou vazia; seguir adiante daria "nenhum grupo"
+        # ou um post sem campos, sem nenhum aviso. O raciocínio do modelo também consome max_tokens.
+        motivo = getattr(resposta, "stop_reason", None)
+        if motivo == "max_tokens":
+            raise RuntimeError(f"resposta do modelo {modelo} cortada em {self.max_tokens} tokens; aumente \"max_tokens\" no config.json")
+        if motivo == "refusal":
+            raise RuntimeError(f"o modelo {modelo} recusou o pedido da ferramenta {nome}")
         for bloco in resposta.content:
             if getattr(bloco, "type", None) == "tool_use" and getattr(bloco, "name", None) == nome:
                 return bloco.input

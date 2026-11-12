@@ -44,10 +44,16 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
         log("   nenhum acontecimento atingiu o mínimo de fontes")
 
     log("== resumindo")
-    posts = []
+    posts, falhas = [], []
     for g in escolhidos:
-        material = material_do_grupo(g, cfg.get("extrair_texto", True), cfg.get("max_artigos_por_evento", 5))
-        post = resumir(llm, cfg["modelos"]["resumir"], g, material)
+        try:
+            material = material_do_grupo(g, cfg.get("extrair_texto", True), cfg.get("max_artigos_por_evento", 5))
+            post = resumir(llm, cfg["modelos"]["resumir"], g, material)
+        except Exception as e:
+            # um resumo que falha não joga fora os outros da rodada, que já foram pagos
+            falhas.append({"evento": g["evento"], "erro": f"{type(e).__name__}: {e}"})
+            log(f"   ! {g['evento']}: {falhas[-1]['erro']}")
+            continue
         post["_links"] = [m.link for m in g["itens"]]
         posts.append(post)
         marca = "pronto" if post["status"] == "pronto" else "REVISAR: " + "; ".join(post["problemas"])
@@ -65,23 +71,29 @@ def executar(cfg, fontes, llm, raiz, seco=False, log=print, agora=None):
     if prontos and not seco:
         publicador = criar_publicador(cfg["publicacao"], raiz)
         publicador.preparar(data)
-    for post in posts:
-        if seco:
-            local = destino_seco.publicar(post, data)
-        elif post["status"] != "pronto":
-            local = destino_revisar.publicar(post, data)
-        else:
-            local = publicador.publicar(post, data)
-            estado.registrar(post["evento"], post["_links"], local)
-        publicados.append({"titulo": post["titulo"], "status": post["status"], "destino": local, "problemas": post["problemas"]})
-        log(f"   → {local}")
-    resultado_git = publicador.finalizar(data) if publicador else None
+    try:
+        for post in posts:
+            if seco:
+                local = destino_seco.publicar(post, data)
+            elif post["status"] != "pronto":
+                local = destino_revisar.publicar(post, data)
+            else:
+                local = publicador.publicar(post, data)
+                estado.registrar(post["evento"], post["_links"], local)
+            publicados.append({"titulo": post["titulo"], "status": post["status"], "destino": local, "problemas": post["problemas"]})
+            log(f"   → {local}")
+        resultado_git = publicador.finalizar(data) if publicador else None
+    except BaseException:
+        if publicador:
+            publicador.cancelar()
+        raise
     if resultado_git:
         log(f"   git: {resultado_git}")
 
     if not seco:
         estado.salvar()
     relatorio["posts"] = publicados
+    relatorio["falhas"] = falhas
     relatorio["git"] = resultado_git
     relatorio["uso"] = llm.relatorio()
     log(f"== custo estimado: US$ {relatorio['uso']['custo_estimado_usd']:.4f}")

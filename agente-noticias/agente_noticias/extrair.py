@@ -1,8 +1,9 @@
 import html
 import re
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 
-from .coletar import baixar
+from .coletar import MAX_PARALELO, baixar
 
 try:
     import trafilatura
@@ -43,9 +44,15 @@ def material_do_grupo(grupo, extrair=True, max_artigos=5, timeout=20):
     por_fonte = {}
     for item in sorted(grupo["itens"], key=lambda i: len(i.descricao), reverse=True):
         por_fonte.setdefault(item.fonte, item)
+    itens = list(por_fonte.values())[:max_artigos]
+    if extrair and itens:
+        # as páginas são de sites diferentes: baixar em paralelo não pesa em nenhum deles
+        with ThreadPoolExecutor(max_workers=min(MAX_PARALELO, len(itens))) as pool:
+            lidos = list(pool.map(lambda i: ler_artigo(i.link, timeout), itens))
+    else:
+        lidos = [("", "")] * len(itens)
     material = []
-    for item in list(por_fonte.values())[:max_artigos]:
-        texto, imagem_pagina = ler_artigo(item.link, timeout) if extrair else ("", "")
+    for item, (texto, imagem_pagina) in zip(itens, lidos):
         material.append({
             "fonte": item.fonte,
             "idioma": item.idioma,

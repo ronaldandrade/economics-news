@@ -42,9 +42,14 @@ def main():
     fontes = carregar(args.fontes)["fontes"]
     if not os.environ.get("ANTHROPIC_API_KEY"):
         sys.exit("defina ANTHROPIC_API_KEY (chave da API da Anthropic)")
-    llm = ClienteLLM(max_tokens=cfg.get("max_tokens", 4096), precos=cfg.get("precos_por_milhao"))
+    llm = ClienteLLM(max_tokens=cfg.get("max_tokens", 16000), precos=cfg.get("precos_por_milhao"))
     relatorio = executar(cfg, fontes, llm, RAIZ, seco=args.seco)
-    sys.exit(0 if all(p["status"] == "pronto" for p in relatorio["posts"]) else 3)
+    limpo = (
+        all(p["status"] == "pronto" for p in relatorio["posts"])
+        and not relatorio["falhas"]
+        and not (relatorio["git"] or {}).get("erro")
+    )
+    sys.exit(0 if limpo else 3)
 
 
 if __name__ == "__main__":
