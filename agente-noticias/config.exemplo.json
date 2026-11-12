@@ -27,6 +27,7 @@
     "repositorio": "..",
     "pasta": "content/noticias",
     "git": "pr",
-    "branch_base": "main"
+    "branch_base": "main",
+    "automerge": true
   }
 }

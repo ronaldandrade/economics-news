@@ -232,3 +232,39 @@ def test_loop_autocorrecao_e_fila_de_suplentes(tmp_path):
     assert rel["posts"][1]["titulo"] == "Pauta 2 Suplente Corrigida"
 
 
+def test_automerge_quando_aprovado(tmp_path):
+    from agente_noticias.pipeline import executar
+    from tests.test_agente import AGORA, FONTES, RESUMO_BOM, cliente, preparar_repo_com_remoto
+
+    remoto, repo = tmp_path / "remoto.git", tmp_path / "site"
+    preparar_repo_com_remoto(tmp_path, remoto, repo)
+    # Adiciona suporte ao 'pr merge' no gh simulado
+    gh_bin = tmp_path / "bin" / "gh"
+    gh_bin.write_text(
+        '#!/bin/bash\nd="$(dirname "$0")"\n'
+        'case "$1 $2" in\n'
+        '  "pr list") [ -f "$d/pr_aberto" ] && cat "$d/pr_aberto"; exit 0;;\n'
+        '  "pr create") n=$(( $(cat "$d/n" 2>/dev/null || echo 0) + 1 )); echo $n > "$d/n";'
+        ' echo https://github.com/x/y/pull/$n | tee "$d/pr_aberto";;\n'
+        '  "pr merge") echo "$*" > "$d/merged_args"; rm -f "$d/pr_aberto"; exit 0;;\n'
+        'esac\n'
+    )
+    gh_bin.chmod(0o755)
+
+    cfg = {
+        "janela_horas": 24,
+        "max_itens_por_fonte": 30,
+        "min_fontes": 2,
+        "max_posts": 1,
+        "extrair_texto": False,
+        "modelos": {"agrupar": "claude-haiku-5-5", "resumir": "claude-haiku-5-5"},
+        "publicacao": {"tipo": "site_json", "repositorio": str(repo), "git": "pr", "automerge": True},
+    }
+    llm, _ = cliente([RESUMO_BOM])
+    rel = executar(cfg, FONTES, llm, tmp_path / "agente", log=lambda *_: None, agora=AGORA)
+    assert rel["git"]["modo"] == "pr"
+    assert rel["git"]["merged"] is True
+    assert "--merge --delete-branch" in (tmp_path / "bin" / "merged_args").read_text()
+
+
+

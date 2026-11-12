@@ -81,6 +81,7 @@ class PublicadorArquivo:
         self.prefixo_branch = cfg.get("prefixo_branch", "noticias")
         self.branch_base = cfg.get("branch_base", "main")
         self.remoto = cfg.get("remoto", "origin")
+        self.automerge = bool(cfg.get("automerge", False))
         self.escritos = []
         self.branch = None
         self.branch_original = None
@@ -173,23 +174,45 @@ class PublicadorArquivo:
         self._voltar_branch()
         existente = self._pr_aberto(self.branch)
         if existente:
-            return {"modo": "pr", "url": existente}
-        try:
-            criado = subprocess.run(
-                ["gh", "pr", "create", "--base", self.branch_base, "--head", self.branch,
-                 "--title", f"Notícias de economia: {data}",
-                 "--body", f"Resumos gerados pelo agente de notícias.\n\n{corpo}\n\nConfira o preview antes do merge."],
-                cwd=self.repo, capture_output=True, text=True,
-            )
-            erro = "" if criado.returncode == 0 else (criado.stderr.strip() or "gh pr create falhou")
-        except OSError as e:
-            erro = f"gh não executou: {e}"
-        if erro:
-            # A branch já está no GitHub. Devolver o erro em vez de levantar exceção deixa o estado ser
-            # salvo; do contrário a próxima rodada publicaria as mesmas notícias outra vez.
-            return {"modo": "pr", "url": None, "branch": self.branch,
-                    "erro": f"a branch {self.branch} foi enviada, mas o PR não foi aberto ({erro}); abra o PR à mão"}
-        return {"modo": "pr", "url": criado.stdout.strip()}
+            url = existente
+        else:
+            nota_corpo = "Aprovadas pelo Agente Auditor Independente (merge automático)." if self.automerge else "Confira o preview antes do merge."
+            try:
+                criado = subprocess.run(
+                    ["gh", "pr", "create", "--base", self.branch_base, "--head", self.branch,
+                     "--title", f"Notícias de economia: {data}",
+                     "--body", f"Resumos gerados pelo agente de notícias:\n\n{corpo}\n\n{nota_corpo}"],
+                    cwd=self.repo, capture_output=True, text=True,
+                )
+                erro = "" if criado.returncode == 0 else (criado.stderr.strip() or "gh pr create falhou")
+            except OSError as e:
+                erro = f"gh não executou: {e}"
+            if erro:
+                # A branch já está no GitHub. Devolver o erro em vez de levantar exceção deixa o estado ser
+                # salvo; do contrário a próxima rodada publicaria as mesmas notícias outra vez.
+                return {"modo": "pr", "url": None, "branch": self.branch,
+                        "erro": f"a branch {self.branch} foi enviada, mas o PR não foi aberto ({erro}); abra o PR à mão"}
+            url = criado.stdout.strip()
+
+        if self.automerge and url:
+            try:
+                m = subprocess.run(
+                    ["gh", "pr", "merge", url, "--merge", "--delete-branch"],
+                    cwd=self.repo, capture_output=True, text=True,
+                )
+                if m.returncode != 0:
+                    m = subprocess.run(
+                        ["gh", "pr", "merge", url, "--auto", "--merge", "--delete-branch"],
+                        cwd=self.repo, capture_output=True, text=True,
+                    )
+                if m.returncode == 0:
+                    subprocess.run(["git", "-C", str(self.repo), "pull", "--ff-only", self.remoto, self.branch_base], capture_output=True)
+                    return {"modo": "pr", "url": url, "merged": True}
+                return {"modo": "pr", "url": url, "merged": False, "erro_merge": m.stderr.strip() or m.stdout.strip()}
+            except OSError as e:
+                return {"modo": "pr", "url": url, "merged": False, "erro_merge": str(e)}
+
+        return {"modo": "pr", "url": url}
 
 
 def juntar_nomes(nomes):
