@@ -1,0 +1,51 @@
+{
+  "slug": "aquecimento-deve-subir-7-em-media-no-inverno-segundo-o-nyt",
+  "date": "2026-11-12",
+  "featured": false,
+  "impactScope": "internacional",
+  "consequence": "relevante",
+  "category": "Energia & Recursos",
+  "kicker": "ALTA DO AQUECIMENTO",
+  "title": "NYT prevê alta média de 7% no custo do aquecimento; em Jersey, gás sobe cerca de 5%",
+  "subtitle": "Segundo o NYT, o custo do aquecimento deve subir 7% em média neste inverno, com alta de cerca de 70% no óleo de aquecimento; o resumo disponível não informa a região. Em Jersey, a Island Energy reajusta as tarifas de gás em cerca de 5%.",
+  "author": "MERIDIAN, com base em NYT Economy e BBC Business",
+  "location": "Jersey",
+  "readTime": "2 min de leitura",
+  "affectedCountries": [
+    "Estados Unidos",
+    "Jersey",
+    "Irã"
+  ],
+  "image": "https://static01.nyt.com/images/2026/11/11/multimedia/11biz-heating-oil-pwlv/11biz-heating-oil-pwlv-mediumSquareAt3X.jpg",
+  "imageCaption": "Foto: NYT Economy.",
+  "source": "NYT Economy / BBC Business",
+  "sourceUrl": "https://www.nytimes.com/2026/11/11/business/energy-environment/winter-heating-oil-costs.html",
+  "sources": [
+    {
+      "name": "NYT Economy",
+      "title": "Heating Costs Will Rise 7% on Average This Winter",
+      "url": "https://www.nytimes.com/2026/11/11/business/energy-environment/winter-heating-oil-costs.html"
+    },
+    {
+      "name": "BBC Business",
+      "title": "Gas bills to rise as Middle East turmoil persists",
+      "url": "https://www.bbc.co.uk/news/articles/ckregdvr2y3go"
+    }
+  ],
+  "keyPoints": [
+    "NYT: custo do aquecimento deve subir em média 7% neste inverno; o resumo disponível não indica país ou região",
+    "NYT: quem usa óleo de aquecimento deve ter aumentos de cerca de 70%",
+    "BBC: em Jersey, a Island Energy eleva as tarifas de gás em cerca de 5% a partir de 1º de dezembro de 2026; é o reajuste de uma empresa, não um índice geral",
+    "A empresa atribui o reajuste a custos mais altos de gás atacado e GLP após interrupções no Oriente Médio"
+  ],
+  "body": [
+    "O New York Times informa que o custo do aquecimento deve subir em média 7% neste inverno. Segundo o jornal, quem usa óleo de aquecimento deve ver aumentos de cerca de 70%. A reportagem atribui o efeito à guerra no Irã, que, nas palavras do jornal, reduziu a oferta desse combustível. O texto disponível é apenas o resumo do feed, sem indicar o país ou a região a que os percentuais se referem, nem a metodologia usada para chegar a eles.",
+    "Em Jersey, a BBC relata que os clientes de gás da Island Energy terão contas cerca de 5% maiores a partir de 1º de dezembro de 2026. A empresa vai elevar em 1 pence por quilowatt-hora (kWh) as tarifas de gás de rede, de botijão e de tanques de granel miniatura, para clientes domésticos e comerciais.",
+    "Segundo a companhia, o reajuste reflete custos mais altos de gás atacado e de gás liquefeito de petróleo (GLP), em meio a interrupções nas exportações e nas rotas de transporte no Oriente Médio após o conflito com o Irã. O diretor-executivo Graeme Millar disse que a compra antecipada de combustível a preços menores limitou o impacto do aumento dos custos de atacado sobre os clientes, mas que a empresa não consegue proteger totalmente os clientes de altas sustentadas no custo do combustível e do transporte até Jersey.",
+    "A Island Energy afirmou que clientes com dificuldade para pagar as contas podem procurar a equipe de atendimento para saber quais apoios estão disponíveis.",
+    "Onde as fontes divergem: Não há contradição direta, mas os números tratam de mercados e escopos diferentes: o NYT fala em média de 7% e alta de cerca de 70% no óleo de aquecimento, sem detalhar país, região ou metodologia; a BBC cita apenas a alta de cerca de 5% nas tarifas de gás de Jersey. Os percentuais não são comparáveis entre si."
+  ],
+  "generatedByAI": true,
+  "consequenceBasis": "Os textos trazem percentuais de preço, mas a BBC informa apenas a alta de cerca de 5% nas tarifas de Jersey e o NYT não detalha a abrangência dos 7% e dos 70%.",
+  "corridorTag": "ESTADOS UNIDOS • JERSEY • IRÃ"
+}
