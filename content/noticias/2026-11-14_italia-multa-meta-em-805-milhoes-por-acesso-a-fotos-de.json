@@ -1,0 +1,46 @@
+{
+  "slug": "italia-multa-meta-em-805-milhoes-por-acesso-a-fotos-de",
+  "date": "2026-11-14",
+  "featured": true,
+  "impactScope": "nacional",
+  "consequence": "relevante",
+  "category": "Tecnologia & Soberania",
+  "kicker": "MULTA DE PRIVACIDADE",
+  "title": "Itália multa Meta em € 805 milhões por acesso a fotos de usuários Android",
+  "subtitle": "Autoridade de proteção de dados italiana multou a Meta por acessar fotos e vídeos de cerca de 20 milhões de usuários Android sem consentimento. A empresa deverá mudar a função de sugestões da galeria em 60 dias.",
+  "author": "MERIDIAN, com base em g1 Economia",
+  "location": "Itália",
+  "readTime": "3 min de leitura",
+  "affectedCountries": [
+    "Itália",
+    "Estados Unidos",
+    "Irlanda"
+  ],
+  "image": "https://s2-g1.glbimg.com/LIaqE_hNb557dRd1e4rQ9k8HBD8=/3840x0/filters:format(jpeg)/https://i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2026/j/E/ZzxdB0QI2vUdC0A2qHpQ/globo-canal-4-20261103-2000-frame-110428.jpeg",
+  "imageCaption": "Foto: g1 Economia.",
+  "source": "g1 Economia",
+  "sourceUrl": "https://g1.globo.com/tecnologia/noticia/2026/11/14/italia-multa-meta.ghtml",
+  "sources": [
+    {
+      "name": "g1 Economia",
+      "title": "Itália multa Meta em R$ 5 bilhões por acessar fotos e vídeos de usuários sem consentimento",
+      "url": "https://g1.globo.com/tecnologia/noticia/2026/11/14/italia-multa-meta.ghtml"
+    }
+  ],
+  "keyPoints": [
+    "A Itália multou a Meta em € 805 milhões (R$ 5 bilhões) por acessar fotos e vídeos de 20 milhões de usuários Android sem consentimento.",
+    "A função de sugestões da galeria vinha ativada por padrão e pedia uma única autorização ampla, segundo a autoridade.",
+    "A Meta deve pedir autorização específica, explicar a função e desativá-la por padrão em até 60 dias.",
+    "A investigação não tratou do uso das imagens para treinar inteligência artificial, prática que a Meta nega."
+  ],
+  "body": [
+    "A autoridade de proteção de dados da Itália multou a Meta em € 805 milhões (R$ 5 bilhões), segundo o g1. O órgão afirma que a empresa acessou fotos e vídeos de 20 milhões de usuários do sistema Android sem obter consentimento nem informá-los sobre a prática.",
+    "A punição envolve a função \"Obtenha sugestões da galeria enquanto navega no Facebook\", disponível desde 2023, que sugere fotos e vídeos armazenados no celular para uso em publicações. Segundo a autoridade, a Meta pedia uma única autorização para acessar a galeria, válida para várias funções, e mostrava apenas um aviso genérico. A função vinha ativada por padrão, e a permissão dava acesso a todo o arquivo de fotos do aparelho. Segundo o órgão, nem o usuário nem a autoridade conseguiam verificar quais informações eram de fato usadas.",
+    "A investigação começou em julho de 2025, após denúncia do Centro de Defesa dos Consumidores de Bolzano, no norte da Itália. O órgão considerou que a prática violou o artigo 122 do Código de Privacidade italiano, que incorpora regras da diretiva europeia ePrivacy. Também rejeitou o argumento da Meta de que o caso deveria ser analisado pelo regulador irlandês. Para fixar o valor, levou em conta o número de pessoas afetadas, a duração da irregularidade, um precedente de 2019 e a colaboração considerada insuficiente. Reconheceu como atenuante as mudanças feitas após a denúncia, mas as avaliou como tardias e limitadas a quem atualizou o aplicativo. Segundo o g1, a multa equivale a cerca de 0,47% do faturamento mundial do grupo.",
+    "A decisão determina que a Meta, em até 60 dias, peça autorização específica para acessar a galeria, explique a finalidade da função e informe como desativá-la. A ferramenta deverá ficar desativada por padrão, inclusive para quem já deu a permissão geral. A empresa terá de informar a autoridade sobre as iniciativas em até 30 dias e sobre as medidas adotadas em até 90 dias.",
+    "O procedimento não investigou se as imagens treinaram sistemas de inteligência artificial, prática que a Meta nega. A autoridade disse que pode abrir investigação separada sobre uma função lançada em 2026 que processa na nuvem o conteúdo da galeria. Em março de 2026, segundo reportagem de jornais suecos citada pelo g1, funcionários terceirizados que analisavam imagens de óculos Ray-Ban Meta tinham acesso a registros de pessoas em situações íntimas. Há um processo na Califórnia, nos EUA, que acusa a Meta de propaganda enganosa e de desrespeito a leis de privacidade. A empresa afirma que os registros são borrados antes da revisão humana.",
+    "Antes, a Meta recebeu outras multas na Europa: € 251 milhões em dezembro de 2024, da Comissão Irlandesa de Proteção de Dados, por falha que expôs dados de 29 milhões de contas, e € 265 milhões em novembro de 2022, também do regulador irlandês, relacionadas a dados de mais de 530 milhões de usuários do Facebook.",
+    "Onde as fontes divergem: Apenas o g1 foi consultado para este resumo. A Meta nega o uso das imagens para treinar inteligência artificial, mas a investigação italiana não apurou esse ponto. Não há outras fontes com versões diferentes."
+  ],
+  "generatedByAI": true
+}
